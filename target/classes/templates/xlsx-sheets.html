@@ -9,7 +9,7 @@
 <body th:onload="${workbook.close()}">
 <div id="sheets">
     <th:block th:each="sheet : ${workbook}">
-        <!-- Each table will be placed into this scrollable container "sheet" that is independent of other sheets -->
+        <!-- Each table will be placed into this scrollable container "sheet" -->
         <div class="sheet"
              th:name="${sheet.sheetName}">
             <table>

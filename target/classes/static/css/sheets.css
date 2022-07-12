@@ -1,0 +1,55 @@
+:root {
+    --tabs-pad-height: 50px;
+    --theme-color: lightgreen;
+    --border: 1px solid lightgrey;
+    --shadow: 0 0 10px grey;
+}
+
+body {
+    display: grid;
+    grid-template-rows: auto var(--tabs-pad-height);
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: calibri;
+}
+
+#sheets {
+
+}
+
+#sheets .sheet {
+    display: none;
+}
+
+#tabs-pad {
+    display: flex;
+    height: 100%;
+    background: gainsboro;
+    border-top: var(--border);
+    box-shadow: var(--shadow);
+}
+#tabs-pad .tab {
+
+}
+
+#tabs-pad .buttons {
+    display: flex;
+    margin-left: auto;
+}
+#tabs-pad .button {
+    display: flex;
+}
+#tabs-pad .button img {
+    height: 25px;
+    width: 25px;
+}
+#tabs-pad .button label {
+    /*     display: none; */
+}
+#tabs-pad .tab, #tabs-pad .button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+}
