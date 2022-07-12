@@ -6,7 +6,7 @@
 
     <artifactId>xlsx-web</artifactId>
     <groupId>me.illyc</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>war</packaging>
 
     <parent>
@@ -42,7 +42,6 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -80,7 +79,6 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -101,11 +99,19 @@
             </exclusions>
         </dependency>
 
-        <!-- SECURITY -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.17</version>
         </dependency>
+
+
+
+        <!-- SECURITY -->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-security</artifactId>-->
+<!--        </dependency>-->
 
         <!-- WEB SERVER -->
         <dependency>
