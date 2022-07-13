@@ -1,6 +1,7 @@
 :root {
     --tabs-pad-height: 30px;
 
+    /* THEME: */
     --theme-color: limegreen;
     --border: 1px solid darkgrey;
     --shadow: 0 0 10px grey;
@@ -29,16 +30,36 @@ body {
 }
 
 #sheets td {
-    padding: 10px;
-    border: var(--border);
+    border: 1px solid grey;
     background-color: white;
 }
+#sheets td > .content {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+}
+#sheets td > .content > label {
+    padding: 5px 10px;
+}
 
-#sheets .header td {
+#sheets .heading > td {
     position: sticky;
     top: 0;
     box-shadow: var(--shadow);
     white-space: nowrap;
+}
+#sheets .heading > td  > .content > label{
+    padding: 5px 20px;
+}
+#sheets .heading .sorter {
+    align-self: end;
+    height: 0;
+    width: 0;
+}
+#sheets .heading .sorter > img{
+    height: 15px;
+    width: 15px;
+    transform: translateX(-100%) translateY(-100%);
 }
 
 #tabs-pad {
@@ -56,7 +77,6 @@ body {
 }
 #tabs-pad .tab.selected {
     cursor: default;
-    padding: 0 15px;
     border-top: 5px solid var(--theme-color);
     background-color: ghostwhite;
     box-shadow: var(--shadow);
@@ -67,7 +87,7 @@ body {
     margin-left: auto;
 }
 #tabs-pad .button {
-    display: flex;
+    outline: 0 solid var(--theme-color);
 }
 #tabs-pad .button img {
     height: 25px;

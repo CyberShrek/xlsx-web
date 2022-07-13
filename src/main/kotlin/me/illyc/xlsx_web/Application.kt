@@ -10,5 +10,5 @@ open class Application
 // (think of this as a primitive implementation of Excel)
 fun main() {
     runApplication<Application>()
-    print("Running")
+    println("Running")
 }

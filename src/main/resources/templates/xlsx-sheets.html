@@ -15,11 +15,14 @@
             <table>
                 <th:block th:each="row : ${sheet}">
                     <!-- Each first row of the sheet is a header -->
-                    <tr th:class="${rowStat.index == 0} ? 'header'"
+                    <tr th:class="${rowStat.index == 0} ? 'heading'"
                         th:attr="index=${rowStat.index}">
                         <th:block th:each="cell : ${row}">
-                            <td th:attr="index=${cellStat.index}">
-                                <label th:text="${cell}"></label>
+                            <td th:attr="index=${cellStat.index}"
+                                th:style="${converter.XSSFCellStyleToCSS(cell.cellStyle)}">
+                                <div class="content">
+                                    <label th:text="${cell}"></label>
+                                </div>
                             </td>
                         </th:block>
                     </tr>
@@ -31,7 +34,8 @@
 <div id="tabs-pad">
     <th:block th:each="sheet : ${workbook}">
         <div class="tab"
-             th:text="${sheet.sheetName}">
+             th:text="${sheet.sheetName}"
+        >
         </div>
     </th:block>
     <div class="buttons">
@@ -46,8 +50,4 @@
     </div>
 </div>
 </body>
-<script>
-    document.querySelector(".sheet").classList.add("selected")
-    document.querySelector(".tab").classList.add("selected")
-</script>
 </html>

@@ -13,6 +13,7 @@ class XlsxController (private val service : XlsxService) {
     @GetMapping
     fun getCatalog (model: Model) : String {
         model.addAttribute("workbook", service.workbook)
+        model.addAttribute("converter", service.converter)
         return "xlsx-sheets"
     }
 
