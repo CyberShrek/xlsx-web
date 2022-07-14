@@ -2,9 +2,10 @@
     --tabs-pad-height: 30px;
 
     /* THEME: */
+    --font: Helvetica;
     --theme-color: limegreen;
-    --border: 1px solid darkgrey;
-    --shadow: 0 0 10px grey;
+    --border: 1px solid darkgray;
+    --shadow: 0 0 10px gray;
 }
 
 body {
@@ -12,49 +13,62 @@ body {
     grid-template-rows: calc(100vh - var(--tabs-pad-height) - 1px) var(--tabs-pad-height);
     grid-template-columns: 100%;
     margin: 0;
-    font-family: calibri, serif;
+    font-family: var(--font);
 }
 
-#sheets .sheet {
+#sheets-pad .sheet {
     display: none;
 }
-#sheets .sheet.selected {
+#sheets-pad .sheet.selected {
     display: block;
     height: 100%;
     width: 100%;
     overflow: auto;
 }
 
-#sheets table {
-    border-collapse: collapse;
+#sheets-pad table {
+    border-spacing: 0;
 }
 
-#sheets td {
-    padding: 5px 10px;
-    border: 1px solid grey;
+#sheets-pad td {
+    cursor: cell;
+    border-top: 1px solid gray;
+    border-right: 1px solid gray;
     background-color: white;
 }
-#sheets td > .content {
+#sheets-pad td > .content {
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
 }
+#sheets-pad td > .content > label {
+    padding: 5px 10px;
+}
 
-#sheets .heading > td {
+#sheets-pad .heading > td {
     position: sticky;
     top: 0;
     box-shadow: var(--shadow);
     white-space: nowrap;
 }
-#sheets .heading .sorter {
+#sheets-pad .heading > td  > .content > label{
+    padding: 5px 20px;
+}
+#sheets-pad .heading .sorter {
+    cursor: pointer;
     align-self: end;
     height: 0;
     width: 0;
 }
-#sheets .heading .sorter > img{
+#sheets-pad .heading .sorter > img{
     height: 15px;
     width: 15px;
     transform: translateX(-100%) translateY(-100%);
+}
+#sheets-pad .heading .sorter.sorted > img {
+    z-index: 10;
+    background-color: var(--theme-color);
+    box-shadow: 0 0 3px 3px var(--theme-color);
 }
 
 #tabs-pad {
