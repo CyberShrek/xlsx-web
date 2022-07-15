@@ -2,10 +2,10 @@
     --tabs-pad-height: 30px;
 
     /* THEME: */
-    --font: Helvetica;
+    --font: Calibri;
     --theme-color: limegreen;
     --border: 1px solid darkgray;
-    --shadow: 0 0 10px gray;
+    --shadow: 0 0 3px darkgray;
 }
 
 body {
@@ -32,35 +32,43 @@ body {
 
 #sheets-pad td {
     cursor: cell;
-    border-top: 1px solid gray;
+    min-width: 50px;
+    padding: 10px;
     border-right: 1px solid gray;
+    border-bottom: 1px solid gray;
     background-color: white;
+}
+#sheets-pad td.void {
+    border-right: 1px solid lightgray;
+    border-bottom: 1px solid lightgray;
 }
 #sheets-pad td > .content {
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
 }
-#sheets-pad td > .content > label {
-    padding: 5px 10px;
-}
 
+#sheets-pad .heading{
+    filter: drop-shadow(var(--shadow));
+}
 #sheets-pad .heading > td {
+    padding: 0;
     position: sticky;
     top: 0;
-    box-shadow: var(--shadow);
     white-space: nowrap;
 }
 #sheets-pad .heading > td  > .content > label{
     padding: 5px 20px;
 }
 #sheets-pad .heading .sorter {
+    user-select: none;
     cursor: pointer;
     align-self: end;
     height: 0;
     width: 0;
 }
 #sheets-pad .heading .sorter > img{
+    padding: 2px;
     height: 15px;
     width: 15px;
     transform: translateX(-100%) translateY(-100%);
@@ -68,8 +76,10 @@ body {
 }
 #sheets-pad .heading .sorter.sorted > img {
     z-index: 10;
-    background-color: var(--theme-color);
-    box-shadow: 0 0 3px 3px var(--theme-color);
+    background-color: white;
+    outline: 2px solid var(--theme-color);
+    border-radius: 4px;
+    transform: translateX(-140%) translateY(-20%);
 }
 
 #tabs-pad {
@@ -89,7 +99,7 @@ body {
     cursor: default;
     border-top: 5px solid var(--theme-color);
     background-color: ghostwhite;
-    box-shadow: var(--shadow);
+    filter: drop-shadow(var(--shadow));
 }
 
 #tabs-pad .buttons {
@@ -106,6 +116,8 @@ body {
 #tabs-pad .button:hover {
     outline: 5px solid var(--theme-color);
     background-color: var(--theme-color);
+    filter: drop-shadow(var(--shadow));
+    border-radius: 3px;
     color: white;
 }
 

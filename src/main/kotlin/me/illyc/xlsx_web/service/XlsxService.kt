@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service
 class XlsxService {
 
     private val catalogName = "catalog.xlsx"
-
     var converter = PoiConverter()
     var workbook = XSSFWorkbook(catalogName)
         private set
