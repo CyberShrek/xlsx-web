@@ -38,10 +38,10 @@ body {
     border-bottom: 1px solid gray;
     background-color: white;
 }
-#sheets-pad td.void {
-    border-right: 1px solid lightgray;
-    border-bottom: 1px solid lightgray;
+#sheets-pad td.selected {
+    outline: 5px solid var(--theme-color);
 }
+
 #sheets-pad td > .content {
     display: flex;
     flex-wrap: nowrap;
