@@ -18,6 +18,24 @@ document.querySelectorAll("#sheets-pad .sheet .heading td .content").forEach(cel
     cellContent.append(sorter)
 })
 
+// Adding numbering cells
+for (const sheet of document.querySelectorAll("#sheets-pad .sheet")) {
+    const rows = sheet.querySelectorAll("tr")
+    for (let i = 0; i < rows.length; i++) {
+        const numberingCell = document.createElement("td")
+        numberingCell.textContent = i
+        numberingCell.className = "number"
+        rows[i].insertBefore(numberingCell, rows[i].querySelector("td"))
+    }
+}
+
+sortingGear.updateNumberingCellsOnSheet = (sheet) => {
+    const numberingCells = sheet.querySelectorAll("td.number")
+    for (let i = 0; i < numberingCells.length; i++) {
+        numberingCells[i].textContent = i
+    }
+}
+
 sortingGear.sortRowsViaSorter = (sorter) => {
     // Rows will be compared based on the text content of cells with this index
     const columnIndex = Number(sorter.closest("td").getAttribute("index"))
@@ -30,7 +48,7 @@ sortingGear.sortRowsViaSorter = (sorter) => {
             return Number(rowA.getAttribute('index')) - Number(rowB.getAttribute('index'))
         } else {
             const cellTextA = rowA.querySelectorAll("td")[columnIndex].textContent.trim(),
-                cellTextB = rowB.querySelectorAll("td")[columnIndex].textContent.trim()
+                  cellTextB = rowB.querySelectorAll("td")[columnIndex].textContent.trim()
             if (cellTextA === '') return sortPosition // Avoiding the void
             if (cellTextB === '') return -sortPosition
             if (cellTextA > cellTextB) return sortPosition
