@@ -1,7 +1,7 @@
-export const sortingGear = {}
+import {sheetsPad} from "../usages.js"
 
 // Adding row sorters into heading cells. Sorter means a button that sorts rows when clicked
-document.querySelectorAll("#sheets-pad .sheet .heading td .content").forEach(cellContent => {
+sheetsPad.querySelectorAll(".sheet .heading td .content").forEach(cellContent => {
     // Creating row sorter — simple div button with image on it
     const sorter = document.createElement("div")
     sorter.append(document.createElement("img"))
@@ -14,29 +14,11 @@ document.querySelectorAll("#sheets-pad .sheet .heading td .content").forEach(cel
     }
     // An example of using of this method — and setting the default direction
     sorter.applyDirection("a-z")
-    sorter.addEventListener("click", () => sortingGear.sortRowsViaSorter(sorter))
+    sorter.addEventListener("click", () => sheetsPad.sortRowsViaSorter(sorter))
     cellContent.append(sorter)
 })
 
-// Adding numbering cells
-for (const sheet of document.querySelectorAll("#sheets-pad .sheet")) {
-    const rows = sheet.querySelectorAll("tr")
-    for (let i = 0; i < rows.length; i++) {
-        const numberingCell = document.createElement("td")
-        numberingCell.textContent = i
-        numberingCell.className = "number"
-        rows[i].insertBefore(numberingCell, rows[i].querySelector("td"))
-    }
-}
-
-sortingGear.updateNumberingCellsOnSheet = (sheet) => {
-    const numberingCells = sheet.querySelectorAll("td.number")
-    for (let i = 0; i < numberingCells.length; i++) {
-        numberingCells[i].textContent = i
-    }
-}
-
-sortingGear.sortRowsViaSorter = (sorter) => {
+sheetsPad.sortRowsViaSorter = (sorter) => {
     // Rows will be compared based on the text content of cells with this index
     const columnIndex = Number(sorter.closest("td").getAttribute("index"))
     const rows        = sorter.closest("table").querySelectorAll('tr:not(.heading)')

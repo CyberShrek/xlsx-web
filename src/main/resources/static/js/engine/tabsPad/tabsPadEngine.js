@@ -1,12 +1,12 @@
-export const tabsPadEngine = {}
+import {sheetsPad, tabsPad} from "../usages.js"
 
 // Adding sheet selectors
-document.querySelectorAll("#tabs-pad .tab").forEach(
+tabsPad.querySelectorAll(".tab").forEach(
     tab => tab.addEventListener("click", () => tabsPadEngine.selectTab(tab)))
 
-tabsPadEngine.selectTab = (tab) => {
-    document.querySelector("#tabs-pad .tab.selected")?.classList.remove("selected")
+tabsPad.selectTab = (tab) => {
+    tabsPad.querySelector(".tab.selected")?.classList.remove("selected")
     tab.classList.add("selected")
-    document.querySelector("#sheets-pad .sheet.selected")?.classList.remove("selected")
-    document.querySelector(`#sheets-pad .sheet[name="${tab.textContent}"]`).classList.add("selected")
+    sheetsPad.querySelector(".sheet.selected")?.classList.remove("selected")
+    sheetsPad.querySelector(`.sheet[name="${tab.textContent}"]`).classList.add("selected")
 }

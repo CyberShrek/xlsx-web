@@ -1,5 +1,6 @@
-import {tabsPadEngine} from "./tabsPad/tabsPadEngine.js"
+import "./tabsPad/tabsPadEngine.js"
 import "./sheetPad/sheetsPadEngine.js"
+import {tabsPad} from "./usages.js"
 
 // The first sheet will be selected
-tabsPadEngine.selectTab(document.querySelector("#tabs-pad .tab"))
+tabsPad.selectTab(document.querySelector("#tabs-pad .tab"))

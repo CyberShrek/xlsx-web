@@ -37,16 +37,6 @@ body {
     border-bottom: 1px solid gray;
     background-color: white;
 }
-#sheets-pad td.number{
-    z-index: 1;
-    cursor: default;
-    text-align: center;
-    padding: 2px;
-    left: 0;
-    position: sticky;
-    background-color: gainsboro;
-    filter: drop-shadow(var(--shadow));
-}
 #sheets-pad td.selected {
     outline: 5px solid var(--theme-color);
 }
