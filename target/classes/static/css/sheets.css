@@ -36,8 +36,15 @@ body {
     border-right: 1px solid gray;
     border-bottom: 1px solid gray;
     background-color: white;
+    outline: 0 solid var(--theme-color);
+    transition: outline 0.1s linear;
+}
+#sheets-pad td * {
+    user-select: none;
+    cursor: cell;
 }
 #sheets-pad td.selected {
+    z-index: 1;
     outline: 5px solid var(--theme-color);
 }
 

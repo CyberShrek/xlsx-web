@@ -2,7 +2,7 @@ import {sheetsPad, tabsPad} from "../usages.js"
 
 // Adding sheet selectors
 tabsPad.querySelectorAll(".tab").forEach(
-    tab => tab.addEventListener("click", () => tabsPadEngine.selectTab(tab)))
+    tab => tab.addEventListener("click", () => tabsPad.selectTab(tab)))
 
 tabsPad.selectTab = (tab) => {
     tabsPad.querySelector(".tab.selected")?.classList.remove("selected")
