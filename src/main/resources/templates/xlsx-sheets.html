@@ -15,11 +15,9 @@
             <table>
                 <th:block th:each="row : ${sheet}">
                     <!-- Each first row of the sheet is a header -->
-                    <tr th:class="${rowStat.index == 0} ? 'heading'"
-                        th:attr="index=${rowStat.index}">
+                    <tr th:class="${rowStat.index == 0} ? 'heading'">
                         <th:block th:each="cell : ${row}">
-                            <td th:attr="index=${cellStat.index}"
-                                th:style="${converter.XSSFCellStyleToCSS(cell.cellStyle)}">
+                            <td th:style="${converter.XSSFCellStyleToCSS(cell.cellStyle)}">
                                 <div class="content">
                                     <label th:text="${cell}"></label>
                                 </div>

@@ -2,7 +2,7 @@ import {sheetsPad} from "../usages.js"
 
 // Adding row sorters into heading cells. Sorter means a button that sorts rows when clicked
 sheetsPad.querySelectorAll(".sheet .heading td .content").forEach(cellContent => {
-    // Creating row sorter — simple div button with image on it
+    // Creating row sorter — div button with image on it
     const sorter = document.createElement("div")
     sorter.append(document.createElement("img"))
     sorter.className = "sorter"
@@ -20,14 +20,14 @@ sheetsPad.querySelectorAll(".sheet .heading td .content").forEach(cellContent =>
 
 sheetsPad.sortRowsViaSorter = (sorter) => {
     // Rows will be compared based on the text content of cells with this index
-    const columnIndex = Number(sorter.closest("td").getAttribute("index"))
+    const columnIndex = sorter.closest("td").columnId
     const rows        = sorter.closest("table").querySelectorAll('tr:not(.heading)')
     // Sorting position when comparing 2 rows and updating sorter's view
-    const sortPosition = getSortPositionAndUpdateSorters()
+    const sortPosition = cultivateSortPosition()
     const sortedRows   = Array.from(rows).sort(function (rowA, rowB) {
         if (sortPosition === 0) {
             // Returning the origin positions
-            return Number(rowA.getAttribute('index')) - Number(rowB.getAttribute('index'))
+            return rowA.originIndex - rowB.originIndex
         } else {
             const cellTextA = rowA.querySelectorAll("td")[columnIndex].textContent.trim(),
                   cellTextB = rowB.querySelectorAll("td")[columnIndex].textContent.trim()
@@ -42,8 +42,10 @@ sheetsPad.sortRowsViaSorter = (sorter) => {
     for (let i = 0; i < sortedRows.length; i++) {
         rows[i].replaceWith(sortedRows[i].cloneNode(true))
     }
+    sheetsPad.updateCellsIndexes()
 
-    function getSortPositionAndUpdateSorters() {
+    // Updates sorters, assigns original indexes to rows (if the sorter was clicked for the first time) and returns sortPosition
+    function cultivateSortPosition() {
         // Reset other sorters
         for (const anySorter of sorter.closest("table").querySelectorAll(".heading .sorter")) {
             if (anySorter !== sorter) {
@@ -52,10 +54,12 @@ sheetsPad.sortRowsViaSorter = (sorter) => {
             }
         }
         if (!sorter.classList.contains("sorted")) {
-            if (sorter.direction === "a-z") {
-                sorter.classList.add("sorted")
-                return 1
+            sorter.classList.add("sorted")
+            // Assigning original indexes to be able to return original positions. Starts with 1 because 0 is a header
+            for (let i = 1; i < rows.length; i++) {
+                rows[i].originIndex = i
             }
+            return 1
         } else {
             if (sorter.direction === "a-z") {
                 sorter.applyDirection("z-a")
