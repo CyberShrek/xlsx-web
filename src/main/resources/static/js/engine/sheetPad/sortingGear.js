@@ -1,33 +1,17 @@
 import {sheetsPad} from "../usages.js"
 
-// Adding row sorters into heading cells. Sorter means a button that sorts rows when clicked
-sheetsPad.querySelectorAll(".sheet .heading td .content").forEach(cellContent => {
-    // Creating row sorter — div button with image on it
-    const sorter = document.createElement("div")
-    sorter.append(document.createElement("img"))
-    sorter.className = "sorter"
-    // Allows changing sorter direction and corresponding title and image
-    sorter.applyDirection = (direction) => {
-        sorter.direction = direction
-        sorter.title = "Sort " + direction
-        sorter.querySelector("img").src = `img/sort ${direction}.png` // must exists
-    }
-    // An example of using of this method — and setting the default direction
-    sorter.applyDirection("a-z")
-    sorter.addEventListener("click", () => sheetsPad.sortRowsViaSorter(sorter))
-    cellContent.append(sorter)
-})
-
+// Sorter means a button that sorts rows when clicked
 sheetsPad.sortRowsViaSorter = (sorter) => {
     // Rows will be compared based on the text content of cells with this index
-    const columnIndex = sorter.closest("td").columnId
+    const columnIndex = sorter.closest("td").cellIndex
     const rows        = sorter.closest("table").querySelectorAll('tr:not(.heading)')
     // Sorting position when comparing 2 rows and updating sorter's view
     const sortPosition = cultivateSortPosition()
     const sortedRows   = Array.from(rows).sort(function (rowA, rowB) {
         if (sortPosition === 0) {
             // Returning the origin positions
-            return rowA.originIndex - rowB.originIndex
+            return Number(rowA.getAttribute("originIndex"))
+                 - Number(rowB.getAttribute("originIndex"))
         } else {
             const cellTextA = rowA.querySelectorAll("td")[columnIndex].textContent.trim(),
                   cellTextB = rowB.querySelectorAll("td")[columnIndex].textContent.trim()
@@ -42,7 +26,6 @@ sheetsPad.sortRowsViaSorter = (sorter) => {
     for (let i = 0; i < sortedRows.length; i++) {
         rows[i].replaceWith(sortedRows[i].cloneNode(true))
     }
-    sheetsPad.updateCellsIndexes()
 
     // Updates sorters, assigns original indexes to rows (if the sorter was clicked for the first time) and returns sortPosition
     function cultivateSortPosition() {
@@ -57,7 +40,8 @@ sheetsPad.sortRowsViaSorter = (sorter) => {
             sorter.classList.add("sorted")
             // Assigning original indexes to be able to return original positions. Starts with 1 because 0 is a header
             for (let i = 1; i < rows.length; i++) {
-                rows[i].originIndex = i
+                // Using a plain attribute as an origin index to avoid its lost after copying
+                rows[i].setAttribute("originIndex", i)
             }
             return 1
         } else {
@@ -73,3 +57,21 @@ sheetsPad.sortRowsViaSorter = (sorter) => {
         }
     }
 }
+
+// Adding row sorters into heading cells
+sheetsPad.querySelectorAll(".sheet .heading td").forEach(cell => {
+    // Creating row sorter — div button with image on it
+    const sorter = document.createElement("div")
+    sorter.append(document.createElement("img"))
+    sorter.className = "sorter"
+    // Allows changing sorter direction and corresponding title and image
+    sorter.applyDirection = (direction) => {
+        sorter.direction = direction
+        sorter.title = "Sort " + direction
+        sorter.querySelector("img").src = `img/sort ${direction}.png` // must exists
+    }
+    // An example of using of this method — and setting the default direction
+    sorter.applyDirection("a-z")
+    sorter.addEventListener("click", () => sheetsPad.sortRowsViaSorter(sorter))
+    cell.append(sorter)
+})

@@ -14,12 +14,13 @@ body {
     grid-template-columns: 100%;
     margin: 0;
     font-family: var(--font);
+    overflow: hidden;
 }
 
 #sheets-pad .sheet {
     display: none;
 }
-#sheets-pad .sheet.selected {
+#sheets-pad .sheet.active {
     display: block;
     height: 100%;
     width: 100%;
@@ -32,16 +33,13 @@ body {
 
 #sheets-pad td {
     cursor: cell;
-    padding: 10px;
+    /*user-select: none;*/
+    padding: 5px;
     border-right: 1px solid gray;
     border-bottom: 1px solid gray;
     background-color: white;
     outline: 0 solid var(--theme-color);
-    transition: outline 0.1s linear;
-}
-#sheets-pad td label {
-    user-select: none;
-    cursor: cell;
+    transition: 0.1s linear;
 }
 #sheets-pad td.selected {
     z-index: 1;
@@ -49,30 +47,26 @@ body {
     border-radius: 2px;
 }
 
-#sheets-pad td > .content {
-    display: flex;
-    flex-wrap: nowrap;
-    flex-direction: column;
-}
-
 #sheets-pad .heading{
     filter: drop-shadow(var(--shadow));
 }
 #sheets-pad .heading > td {
-    padding: 0;
+    padding: 5px 20px;
     position: sticky;
     top: 0;
     white-space: nowrap;
 }
-#sheets-pad .heading > td  > .content > label{
-    padding: 5px 20px;
-}
+
 #sheets-pad .heading .sorter {
+    opacity: 0.3;
     user-select: none;
     cursor: pointer;
-    align-self: end;
     height: 0;
     width: 0;
+    transition: opacity 0.1s;
+}
+#sheets-pad .heading td:hover .sorter, #sheets-pad .heading td .sorter.sorted {
+    opacity: 1;
 }
 #sheets-pad .heading .sorter > img{
     padding: 2px;
@@ -86,7 +80,7 @@ body {
     background-color: white;
     outline: 2px solid var(--theme-color);
     border-radius: 4px;
-    transform: translateX(-140%) translateY(-20%);
+    transform: translateX(-100%);
 }
 
 #tabs-pad {
@@ -98,11 +92,12 @@ body {
 
 #tabs-pad .tab {
     border-right: var(--border);
+    white-space: nowrap;
 }
 #tabs-pad .tab:hover {
     background-color: ghostwhite;
 }
-#tabs-pad .tab.selected {
+#tabs-pad .tab.active {
     cursor: default;
     border-top: 5px solid var(--theme-color);
     background-color: ghostwhite;

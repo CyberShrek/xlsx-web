@@ -9,12 +9,14 @@ sheetsPad.querySelectorAll(".sheet").forEach(sheet => {
     document.addEventListener("keydown", selectOnArrows) // Allows selecting via pressing the arrows
     sheet.addEventListener("copy", copySelectedCells)    // This allows to copy selected cells
 
+    sheet.getSelectedCells = () => table.querySelectorAll("td.selected")
+
     let cellStart, cellEnd // Cells between whose matrix of cells will be selected
-    const matrix = {}      // A matrix object
 
     function startSelection(event) {
         const targetCell = event.target.closest("td")
-        if (targetCell === null) return
+        if (!targetCell) return
+        // event.preventDefault()
         chooseNewCell(targetCell, event)
         // When the mouse cursor moves over the cells, these cells are included in the matrix
         table.addEventListener("mousemove", selectCellsMatrix)
@@ -22,7 +24,7 @@ sheetsPad.querySelectorAll(".sheet").forEach(sheet => {
     function endSelection() { table.removeEventListener("mousemove", selectCellsMatrix) }
 
     function selectOnArrows(event) {
-        if (!table.closest(".sheet").classList.contains("selected") ||
+        if (sheet !== sheetsPad.getActiveSheet() ||
             // Arrows key codes
             event.keyCode < 37 || event.keyCode > 40) { return }
 
@@ -30,44 +32,37 @@ sheetsPad.querySelectorAll(".sheet").forEach(sheet => {
 
         let targetCell
         try { switch (event.keyCode) {
-            case 37 : selectLeftCellAndScroll();   break // LEFT
-            case 38 : selectTopCellAndScroll();    break // TOP
-            case 39 : selectRightCellAndScroll();  break // RIGHT
-            case 40 : selectBottomCellAndScroll(); break // BOTTOM
-        } } catch (e) { return }
-        if(!targetCell) return
-        chooseNewCell(targetCell, event)
+            case 37 : selectLeftCell();   break // LEFT
+            case 38 : selectTopCell();    break // TOP
+            case 39 : selectRightCell();  break // RIGHT
+            case 40 : selectBottomCell(); break // BOTTOM
+        } } catch (exception) { return }
 
-        function selectLeftCellAndScroll() {
-            targetCell = table.querySelectorAll("tr")[cellEnd.rowId]
-                              .querySelectorAll("td")[cellEnd.columnId - 1]
-            smoothScrollBy(() => sheet.scrollLeft > targetCell.offsetLeft,
-                -20, 0)
+        if(targetCell) chooseNewCell(targetCell, event)
+
+        function selectLeftCell() {
+            targetCell = table.querySelectorAll("tr")[cellEnd.rowIndex]
+                              .querySelectorAll("td")[cellEnd.cellIndex - 1]
+            if (sheet.scrollLeft > targetCell.offsetLeft)
+                targetCell.scrollIntoView({block: "nearest", inline: "start", behavior: "smooth"})
         }
-        function selectTopCellAndScroll() {
-            targetCell = table.querySelectorAll("tr")[cellEnd.rowId - 1]
-                              .querySelectorAll("td")[cellEnd.columnId]
-            smoothScrollBy(() => sheet.scrollTop > targetCell.offsetTop,
-                0, -20)
+        function selectTopCell() {
+            targetCell = table.querySelectorAll("tr")[cellEnd.rowIndex - 1]
+                              .querySelectorAll("td")[cellEnd.cellIndex]
+            if (sheet.scrollTop > targetCell.offsetTop)
+                targetCell.scrollIntoView({block: "start", inline: "nearest", behavior: "smooth"})
         }
-        function selectRightCellAndScroll() {
-            targetCell = table.querySelectorAll("tr")[cellEnd.rowId]
-                              .querySelectorAll("td")[cellEnd.columnId + 1]
-            smoothScrollBy(() => sheet.scrollLeft + sheet.clientWidth < targetCell.offsetLeft + targetCell.offsetWidth,
-                20, 0)
+        function selectRightCell() {
+            targetCell = table.querySelectorAll("tr")[cellEnd.rowIndex]
+                              .querySelectorAll("td")[cellEnd.cellIndex + 1]
+            if (sheet.scrollLeft + sheet.clientWidth < targetCell.offsetLeft + targetCell.offsetWidth)
+                targetCell.scrollIntoView({block: "nearest", inline: "end", behavior: "smooth"})
         }
-        function selectBottomCellAndScroll() {
-            targetCell = table.querySelectorAll("tr")[cellEnd.rowId + 1]
-                              .querySelectorAll("td")[cellEnd.columnId]
-            smoothScrollBy(() => sheet.scrollTop + sheet.clientHeight < targetCell.offsetTop + targetCell.offsetHeight,
-                0, 20)
-        }
-        // Allows smooth scrolling. Standard .scrollBy(x, y) doing it so sharply
-        function smoothScrollBy(condition, x, y) {
-            if (condition()) {
-                sheet.scrollBy(x, y)
-                setTimeout(() => smoothScrollBy(condition, x, y), 1)
-            }
+        function selectBottomCell() {
+            targetCell = table.querySelectorAll("tr")[cellEnd.rowIndex + 1]
+                              .querySelectorAll("td")[cellEnd.cellIndex]
+            if (sheet.scrollTop + sheet.clientHeight < targetCell.offsetTop + targetCell.offsetHeight)
+                targetCell.scrollIntoView({block: "end", inline: "nearest", behavior: "smooth"})
         }
     }
 
@@ -87,23 +82,50 @@ sheetsPad.querySelectorAll(".sheet").forEach(sheet => {
             if (targetCell === null || targetCell === cellEnd) return
             cellEnd = targetCell
         }
-        matrix.topId    = (cellStart.rowId <= cellEnd.rowId) ? cellStart.rowId : cellEnd.rowId
-        matrix.bottomId = (cellStart.rowId <= cellEnd.rowId) ? cellEnd.rowId   : cellStart.rowId
-        matrix.leftId   = (cellStart.columnId <= cellEnd.columnId) ? cellStart.columnId : cellEnd.columnId
-        matrix.rightId  = (cellStart.columnId <= cellEnd.columnId) ? cellEnd.columnId   : cellStart.columnId
+        cellStart.rowIndex = cellStart.closest("tr").rowIndex
+        cellEnd.rowIndex = cellEnd.closest("tr").rowIndex
+        const matrixTopId    = (cellStart.rowIndex <= cellEnd.rowIndex) ? cellStart.rowIndex : cellEnd.rowIndex,
+              matrixBottomId = (cellStart.rowIndex <= cellEnd.rowIndex) ? cellEnd.rowIndex   : cellStart.rowIndex,
+              matrixLeftId   = (cellStart.cellIndex <= cellEnd.cellIndex) ? cellStart.cellIndex : cellEnd.cellIndex,
+              matrixRightId  = (cellStart.cellIndex <= cellEnd.cellIndex) ? cellEnd.cellIndex   : cellStart.cellIndex
 
         // Removing selects that remained after the previous matrix filling
-        table.querySelectorAll("td.selected").forEach(cell => cell.classList.remove("selected"))
+        sheet.getSelectedCells().forEach(cell => cell.classList.remove("selected"))
         // Filling the matrix from left top cell to right bottom cell
-        for (let i = matrix.topId; i <= matrix.bottomId; i++) {
+        for (let i = matrixTopId; i <= matrixBottomId; i++) {
             const cells = table.querySelectorAll("tr")[i].querySelectorAll("td")
-            for (let j = matrix.leftId; j <= matrix.rightId; j++) {
+            for (let j = matrixLeftId; j <= matrixRightId; j++) {
                 cells[j].classList.add("selected")
             }
         }
     }
 
+    // A simple solution should be to just add all selected cells to Ranges, then push these Ranges into Selection.
+    // But multi-selection, that allows to add more than one range into Selection, only works in Firefox.
+    // So I decided next: each time before copying, a new table will be created, filled with selected cells,
+    // and pushed into Selection as a single Range. This table will be placed in the <clipboard> element
     function copySelectedCells() {
+        const selectedCells = sheet.getSelectedCells(),
+              copyingTable  = document.createElement("table")
+        let   copyingRow    = document.createElement("tr")
 
+        selectedCells.forEach(cell => {
+
+            // if (copyingRow.index !== cell.rowId)/
+            const copyingCell = cell.cloneNode(true)
+            copyingCell.classList.remove("selected")
+            //
+
+            copyingTable.append(copyingCell)
+            console.log(cell)
+        })
+        // copyingTable.append(copyingRow)
+
+        document.querySelector("clipboard").replaceChildren(copyingTable)
+
+        const range = new Range()
+        range.selectNode(copyingTable)
+        window.getSelection().removeAllRanges()
+        window.getSelection().addRange(range)
     }
 })

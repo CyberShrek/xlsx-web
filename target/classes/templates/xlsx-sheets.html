@@ -6,7 +6,7 @@
     <script type="module" th:src="@{/js/engine/engineStarter.js}"></script>
     <title>XLSX-web</title>
 </head>
-<body th:onload="${workbook.close()}">
+<body>
 <div id="sheets-pad">
     <th:block th:each="sheet : ${workbook}">
         <!-- Each table will be placed into this scrollable container "sheet" that is independent of other sheets -->
@@ -15,14 +15,10 @@
             <table>
                 <th:block th:each="row : ${sheet}">
                     <!-- Each first row of the sheet is a header -->
-                    <tr th:class="${rowStat.index == 0} ? 'heading'"
-                        th:attr="index=${rowStat.index}">
+                    <tr th:class="${rowStat.index == 0} ? 'heading'">
                         <th:block th:each="cell : ${row}">
-                            <td th:attr="index=${cellStat.index}"
-                                th:style="${converter.XSSFCellStyleToCSS(cell.cellStyle)}">
-                                <div class="content">
-                                    <label th:text="${cell}"></label>
-                                </div>
+                            <td th:style="${converter.XSSFCellStyleToCSS(cell.cellStyle)}"
+                                th:text="${cell}">
                             </td>
                         </th:block>
                     </tr>
@@ -30,6 +26,7 @@
             </table>
         </div>
     </th:block>
+    <clipboard></clipboard>
 </div>
 <div id="tabs-pad">
     <th:block th:each="sheet : ${workbook}">
