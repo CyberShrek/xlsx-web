@@ -1,27 +1,22 @@
-import {sheetsPad} from "../usages.js"
+import {Workbook} from "../entities/Workbook.js"
 
 // adding the cell selection mechanism like in Excel
-sheetsPad.querySelectorAll(".sheet").forEach(sheet => {
-    const table = sheet.querySelector("table")
-
-    table.addEventListener("mousedown", startSelection)  // Selection will start by mouse button down
+Workbook.sheets.forEach(sheet => {
+    sheet.addEventListener("mousedown", startSelection)  // Selection will start by mouse button down
     window.addEventListener("mouseup", endSelection)     // And will end by button up in any zones of the window
     document.addEventListener("keydown", selectOnArrows) // Allows selecting via pressing the arrows
     sheet.addEventListener("copy", copySelectedCells)    // This allows to copy selected cells
 
-    sheet.getSelectedCells = () => table.querySelectorAll("td.selected")
-
     let cellStart, cellEnd // Cells between whose matrix of cells will be selected
 
     function startSelection(event) {
-        const targetCell = event.target.closest("td")
+        const targetCell = Workbook.getClosestCellTo(event.target)
         if (!targetCell) return
-        // event.preventDefault()
         chooseNewCell(targetCell, event)
         // When the mouse cursor moves over the cells, these cells are included in the matrix
-        table.addEventListener("mousemove", selectCellsMatrix)
+        sheet.addEventListener("mousemove", selectCellsMatrix)
     }
-    function endSelection() { table.removeEventListener("mousemove", selectCellsMatrix) }
+    function endSelection() { sheet.removeEventListener("mousemove", selectCellsMatrix) }
 
     function selectOnArrows(event) {
         if (sheet !== sheetsPad.getActiveSheet() ||
@@ -41,26 +36,22 @@ sheetsPad.querySelectorAll(".sheet").forEach(sheet => {
         if(targetCell) chooseNewCell(targetCell, event)
 
         function selectLeftCell() {
-            targetCell = table.querySelectorAll("tr")[cellEnd.rowIndex]
-                              .querySelectorAll("td")[cellEnd.cellIndex - 1]
+            targetCell = sheet.getCell(cellEnd.rowIndex,cellEnd.cellIndex-1)
             if (sheet.scrollLeft > targetCell.offsetLeft)
                 targetCell.scrollIntoView({block: "nearest", inline: "start", behavior: "smooth"})
         }
         function selectTopCell() {
-            targetCell = table.querySelectorAll("tr")[cellEnd.rowIndex - 1]
-                              .querySelectorAll("td")[cellEnd.cellIndex]
+            targetCell = sheet.getCell(cellEnd.rowIndex-1,cellEnd.cellIndex)
             if (sheet.scrollTop > targetCell.offsetTop)
                 targetCell.scrollIntoView({block: "start", inline: "nearest", behavior: "smooth"})
         }
         function selectRightCell() {
-            targetCell = table.querySelectorAll("tr")[cellEnd.rowIndex]
-                              .querySelectorAll("td")[cellEnd.cellIndex + 1]
+            targetCell = sheet.getCell(cellEnd.rowIndex,cellEnd.cellIndex+1)
             if (sheet.scrollLeft + sheet.clientWidth < targetCell.offsetLeft + targetCell.offsetWidth)
                 targetCell.scrollIntoView({block: "nearest", inline: "end", behavior: "smooth"})
         }
         function selectBottomCell() {
-            targetCell = table.querySelectorAll("tr")[cellEnd.rowIndex + 1]
-                              .querySelectorAll("td")[cellEnd.cellIndex]
+            targetCell = sheet.getCell(cellEnd.rowIndex+1,cellEnd.cellIndex)
             if (sheet.scrollTop + sheet.clientHeight < targetCell.offsetTop + targetCell.offsetHeight)
                 targetCell.scrollIntoView({block: "end", inline: "nearest", behavior: "smooth"})
         }
@@ -78,22 +69,20 @@ sheetsPad.querySelectorAll(".sheet").forEach(sheet => {
     // Matrix selection function — most important function here
     function selectCellsMatrix(event) {
         if (event != null) {
-            const targetCell = event.target.closest('td')
+            const targetCell = event.target.closest("td")
             if (targetCell === null || targetCell === cellEnd) return
             cellEnd = targetCell
         }
-        cellStart.rowIndex = cellStart.closest("tr").rowIndex
-        cellEnd.rowIndex = cellEnd.closest("tr").rowIndex
         const matrixTopId    = (cellStart.rowIndex <= cellEnd.rowIndex) ? cellStart.rowIndex : cellEnd.rowIndex,
               matrixBottomId = (cellStart.rowIndex <= cellEnd.rowIndex) ? cellEnd.rowIndex   : cellStart.rowIndex,
               matrixLeftId   = (cellStart.cellIndex <= cellEnd.cellIndex) ? cellStart.cellIndex : cellEnd.cellIndex,
               matrixRightId  = (cellStart.cellIndex <= cellEnd.cellIndex) ? cellEnd.cellIndex   : cellStart.cellIndex
 
         // Removing selects that remained after the previous matrix filling
-        sheet.getSelectedCells().forEach(cell => cell.classList.remove("selected"))
+        sheet.removeSelects()
         // Filling the matrix from left top cell to right bottom cell
         for (let i = matrixTopId; i <= matrixBottomId; i++) {
-            const cells = table.querySelectorAll("tr")[i].querySelectorAll("td")
+            const cells = sheet.rows[i].getCells()
             for (let j = matrixLeftId; j <= matrixRightId; j++) {
                 cells[j].classList.add("selected")
             }

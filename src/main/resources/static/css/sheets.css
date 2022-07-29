@@ -44,20 +44,19 @@ body {
 #sheets-pad td.selected {
     z-index: 1;
     outline: 5px solid var(--theme-color);
-    border-radius: 2px;
 }
 
-#sheets-pad .heading{
+#sheets-pad .header{
     filter: drop-shadow(var(--shadow));
 }
-#sheets-pad .heading > td {
+#sheets-pad .header > td {
     padding: 5px 20px;
     position: sticky;
     top: 0;
     white-space: nowrap;
 }
 
-#sheets-pad .heading .sorter {
+#sheets-pad .header .sorter {
     opacity: 0.3;
     user-select: none;
     cursor: pointer;
@@ -65,17 +64,17 @@ body {
     width: 0;
     transition: opacity 0.1s;
 }
-#sheets-pad .heading td:hover .sorter, #sheets-pad .heading td .sorter.sorted {
+#sheets-pad .header td:hover .sorter, #sheets-pad .header td .sorter.sorted {
     opacity: 1;
 }
-#sheets-pad .heading .sorter > img{
+#sheets-pad .header .sorter > img{
     padding: 2px;
     height: 15px;
     width: 15px;
     transform: translateX(-100%) translateY(-100%);
     transition: 0.1s;
 }
-#sheets-pad .heading .sorter.sorted > img {
+#sheets-pad .header .sorter.sorted > img {
     z-index: 10;
     background-color: white;
     outline: 2px solid var(--theme-color);

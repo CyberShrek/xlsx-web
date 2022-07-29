@@ -1,20 +1,20 @@
-import {sheetsPad} from "../usages.js"
+import {Workbook} from "../entities/Workbook.js"
 
 // Sorter means a button that sorts rows when clicked
-sheetsPad.sortRowsViaSorter = (sorter) => {
-    // Rows will be compared based on the text content of cells with this index
-    const columnIndex = sorter.closest("td").cellIndex
-    const rows        = sorter.closest("table").querySelectorAll('tr:not(.heading)')
-    // Sorting position when comparing 2 rows and updating sorter's view
-    const sortPosition = cultivateSortPosition()
-    const sortedRows   = Array.from(rows).sort(function (rowA, rowB) {
+sheetsPad.sortRowsViaSorter=(sorter) => {
+    const
+        columnIndex  = Workbook.getClosestCellTo(sorter).cellIndex,
+        sheet        = Workbook.getClosestSheetTo(sorter),
+        // Sorting position when comparing 2 rows and updating sorter's view
+        sortPosition = cultivateSortPosition(),
+        sortedRows   = Array.from(rows).sort(function (rowA, rowB) {
         if (sortPosition === 0) {
             // Returning the origin positions
             return Number(rowA.getAttribute("originIndex"))
                  - Number(rowB.getAttribute("originIndex"))
         } else {
-            const cellTextA = rowA.querySelectorAll("td")[columnIndex].textContent.trim(),
-                  cellTextB = rowB.querySelectorAll("td")[columnIndex].textContent.trim()
+            const cellTextA = rowA.getCells()[columnIndex].textContent.trim(),
+                  cellTextB = rowB.getCells()[columnIndex].textContent.trim()
             if (cellTextA === '') return sortPosition // Avoiding the void
             if (cellTextB === '') return -sortPosition
             if (cellTextA > cellTextB) return sortPosition
@@ -26,6 +26,7 @@ sheetsPad.sortRowsViaSorter = (sorter) => {
     for (let i = 0; i < sortedRows.length; i++) {
         rows[i].replaceWith(sortedRows[i].cloneNode(true))
     }
+    sheetsPad.getClosestSheetTo(sorter).updateCellsCoordinates()
 
     // Updates sorters, assigns original indexes to rows (if the sorter was clicked for the first time) and returns sortPosition
     function cultivateSortPosition() {
@@ -59,7 +60,7 @@ sheetsPad.sortRowsViaSorter = (sorter) => {
 }
 
 // Adding row sorters into heading cells
-sheetsPad.querySelectorAll(".sheet .heading td").forEach(cell => {
+sheetsPad.getSheets().forEach(sheet => sheet.getHeaderRow().getCells().forEach(cell => {
     // Creating row sorter — div button with image on it
     const sorter = document.createElement("div")
     sorter.append(document.createElement("img"))
@@ -74,4 +75,4 @@ sheetsPad.querySelectorAll(".sheet .heading td").forEach(cell => {
     sorter.applyDirection("a-z")
     sorter.addEventListener("click", () => sheetsPad.sortRowsViaSorter(sorter))
     cell.append(sorter)
-})
+}))
