@@ -17,8 +17,10 @@
                     <!-- Each first row of the sheet is a header -->
                     <tr th:class="${rowStat.index == 0} ? 'header'">
                         <th:block th:each="cell : ${row}">
-                            <td th:style="${converter.XSSFCellStyleToCSS(cell.cellStyle)}"
-                                th:text="${cell}">
+                            <td th:style="${converter.XSSFCellStyleToCSS(cell.cellStyle)}">
+                                <div class="content"
+                                     th:text="${cell}">
+                                </div>
                             </td>
                         </th:block>
                     </tr>
@@ -31,6 +33,7 @@
 <div id="tabs-pad">
     <th:block th:each="sheet : ${workbook}">
         <div class="tab"
+             th:name="${sheet.sheetName}"
              th:text="${sheet.sheetName}"
         >
         </div>

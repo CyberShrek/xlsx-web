@@ -1,25 +1,40 @@
-import {Workbook} from "../entities/Workbook.js"
+// Adds the cell selection mechanism like in Excel to sheet
+export function addMatrixSelectorToSheet(sheet){
+    const table = sheet.closest("table")
+    // The matrix of selected cells
+    const matrix = {
+        selects: [],
+        // Cells between whose matrix of cells will be selected
+        cellStart: undefined,
+        cellEnd  : undefined,
+        // Matrix coordinates
+        matrixTopId   : undefined,
+        matrixBottomId: undefined,
+        matrixLeftId  : undefined,
+        matrixRightId : undefined
+    }
+    // Defining common methods for this matrix
+    matrix.selectCell=(cell)=>{
+        cell.classList.add("selected")
+        matrix.selects.push(cell)
+    }
 
-// adding the cell selection mechanism like in Excel
-Workbook.sheets.forEach(sheet => {
-    sheet.addEventListener("mousedown", startSelection)  // Selection will start by mouse button down
+    table.addEventListener("mousedown", startSelection)  // Selection will start by mouse button down
     window.addEventListener("mouseup", endSelection)     // And will end by button up in any zones of the window
     document.addEventListener("keydown", selectOnArrows) // Allows selecting via pressing the arrows
-    sheet.addEventListener("copy", copySelectedCells)    // This allows to copy selected cells
-
-    let cellStart, cellEnd // Cells between whose matrix of cells will be selected
+    table.addEventListener("copy", copySelectedCells)    // This allows to copy selected cells
 
     function startSelection(event) {
-        const targetCell = Workbook.getClosestCellTo(event.target)
+        const targetCell = event.target.closest("td")
         if (!targetCell) return
         chooseNewCell(targetCell, event)
         // When the mouse cursor moves over the cells, these cells are included in the matrix
-        sheet.addEventListener("mousemove", selectCellsMatrix)
+        table.addEventListener("mousemove", selectCellsMatrix)
     }
-    function endSelection() { sheet.removeEventListener("mousemove", selectCellsMatrix) }
+    function endSelection() { table.removeEventListener("mousemove", selectCellsMatrix) }
 
     function selectOnArrows(event) {
-        if (sheet !== sheetsPad.getActiveSheet() ||
+        if (!sheet.classList.contains("active") ||
             // Arrows key codes
             event.keyCode < 37 || event.keyCode > 40) { return }
 
@@ -66,7 +81,7 @@ Workbook.sheets.forEach(sheet => {
         selectCellsMatrix()
     }
 
-    // Matrix selection function — most important function here
+    // Most important function here
     function selectCellsMatrix(event) {
         if (event != null) {
             const targetCell = event.target.closest("td")
@@ -79,12 +94,11 @@ Workbook.sheets.forEach(sheet => {
               matrixRightId  = (cellStart.cellIndex <= cellEnd.cellIndex) ? cellEnd.cellIndex   : cellStart.cellIndex
 
         // Removing selects that remained after the previous matrix filling
-        sheet.removeSelects()
+        table.querySelectorAll("td.selected").forEach(cell => cell.classList.remove("selected"))
         // Filling the matrix from left top cell to right bottom cell
         for (let i = matrixTopId; i <= matrixBottomId; i++) {
-            const cells = sheet.rows[i].getCells()
             for (let j = matrixLeftId; j <= matrixRightId; j++) {
-                cells[j].classList.add("selected")
+                table.rows[i].cells[j].classList.add("selected")
             }
         }
     }
@@ -117,4 +131,4 @@ Workbook.sheets.forEach(sheet => {
         window.getSelection().removeAllRanges()
         window.getSelection().addRange(range)
     }
-})
+}

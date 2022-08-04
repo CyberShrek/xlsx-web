@@ -1,7 +1,13 @@
-import {sheetsPad} from "./entities/Workbook.js"
-import {tabsPad} from "./engine/tabsPad.js"
-import "./engine/sortingGear.js"
-import "./engine/matrixSelector.js"
+import {workbook} from "./workbook/workbook.js"
+import {addSortersToSheet} from "./engine/sorting.js"
+import {addMatrixSelectorToSheet} from "./engine/matrixSelector.js"
 
-sheetsPad.getSheets().forEach(sheet => sheetsPad.updateCellsCoordinatesInSheet(sheet))
-tabsPad.selectSheet(document.querySelector("#tabs-pad .tab"))
+workbook.sheets.forEach(sheet => {
+    // Adding row's sorters to header cells
+    addSortersToSheet(sheet)
+    // Adding the cell selection mechanism
+    addMatrixSelectorToSheet(sheet)
+})
+
+// Default
+workbook.activeSheet = workbook.sheets[0]
