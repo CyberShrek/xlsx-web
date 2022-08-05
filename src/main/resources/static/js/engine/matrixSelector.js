@@ -1,134 +1,140 @@
 // Adds the cell selection mechanism like in Excel to sheet
+import {workbook} from "../workbook/workbook.js";
+
 export function addMatrixSelectorToSheet(sheet){
-    const table = sheet.closest("table")
     // The matrix of selected cells
     const matrix = {
-        selects: [],
+        cells: [],
+        addCell(cell){
+            cell.classList.add("selected")
+            this.cells.push(cell)
+        },
+        removeCell(cell){
+            cell.classList.remove("selected")
+        },
+        clear(){
+            this.cells.forEach(cell => this.removeCell(cell))
+            this.cells = []
+        },
         // Cells between whose matrix of cells will be selected
-        cellStart: undefined,
-        cellEnd  : undefined,
+        cellA: undefined,
+        cellB: undefined,
         // Matrix coordinates
-        matrixTopId   : undefined,
-        matrixBottomId: undefined,
-        matrixLeftId  : undefined,
-        matrixRightId : undefined
+        get topId(){
+            return (this.cellA.rowIndex <= this.cellB.rowIndex) ? this.cellA.rowIndex : this.cellB.rowIndex
+        },
+        get bottomId(){
+            return (this.cellA.rowIndex <= this.cellB.rowIndex) ? this.cellB.rowIndex : this.cellA.rowIndex
+        },
+        get leftId(){
+            return (this.cellA.cellIndex <= this.cellB.cellIndex) ? this.cellA.cellIndex : this.cellB.cellIndex
+        },
+        get rightId(){
+            return (this.cellA.cellIndex <= this.cellB.cellIndex) ? this.cellB.cellIndex : this.cellA.cellIndex
+        }
     }
-    // Defining common methods for this matrix
-    matrix.selectCell=(cell)=>{
-        cell.classList.add("selected")
-        matrix.selects.push(cell)
-    }
+    // Allows to get this matrix from the sheet
+    sheet.selectsMatrix = matrix
 
-    table.addEventListener("mousedown", startSelection)  // Selection will start by mouse button down
+    sheet.table.addEventListener("mousedown", startSelection) // Selection will start by mouse button down
     window.addEventListener("mouseup", endSelection)     // And will end by button up in any zones of the window
     document.addEventListener("keydown", selectOnArrows) // Allows selecting via pressing the arrows
-    table.addEventListener("copy", copySelectedCells)    // This allows to copy selected cells
 
     function startSelection(event) {
-        const targetCell = event.target.closest("td")
+        const targetCell = workbook.getCellFromEvent(event)
         if (!targetCell) return
-        chooseNewCell(targetCell, event)
+        selectNewCell(targetCell, event)
         // When the mouse cursor moves over the cells, these cells are included in the matrix
-        table.addEventListener("mousemove", selectCellsMatrix)
+        sheet.table.addEventListener("mousemove", selectCellsMatrix)
     }
-    function endSelection() { table.removeEventListener("mousemove", selectCellsMatrix) }
+    function endSelection() {
+        sheet.table.removeEventListener("mousemove", selectCellsMatrix)
+    }
 
+    // Moves the selector after the last selected cell according to the pressed arrow
     function selectOnArrows(event) {
         if (!sheet.classList.contains("active") ||
             // Arrows key codes
             event.keyCode < 37 || event.keyCode > 40) { return }
 
-        event.preventDefault() // Removing standard arrows scrolling
+        event.preventDefault() // Prevent standard arrows scrolling
 
         let targetCell
         try { switch (event.keyCode) {
-            case 37 : selectLeftCell();   break // LEFT
-            case 38 : selectTopCell();    break // TOP
-            case 39 : selectRightCell();  break // RIGHT
-            case 40 : selectBottomCell(); break // BOTTOM
+            case 37: // LEFT
+                targetCell = sheet.rows[matrix.cellB.rowIndex].cells[matrix.cellB.cellIndex-1]
+                if (sheet.scrollLeft > targetCell.offsetLeft)
+                    targetCell.scrollIntoView({block: "nearest", inline: "start", behavior: "smooth"}); break
+            case 38: // TOP
+                targetCell = sheet.rows[matrix.cellB.rowIndex-1].cells[matrix.cellB.cellIndex]
+                if (sheet.scrollTop > targetCell.offsetTop)
+                    targetCell.scrollIntoView({block: "start", inline: "nearest", behavior: "smooth"}); break
+            case 39: // RIGHT
+                targetCell = sheet.rows[matrix.cellB.rowIndex].cells[matrix.cellB.cellIndex+1]
+                if (sheet.scrollLeft + sheet.clientWidth < targetCell.offsetLeft + targetCell.offsetWidth)
+                    targetCell.scrollIntoView({block: "nearest", inline: "end", behavior: "smooth"}); break
+            case 40: // BOTTOM
+                targetCell = sheet.rows[matrix.cellB.rowIndex+1].cells[matrix.cellB.cellIndex]
+                if (sheet.scrollTop + sheet.clientHeight < targetCell.offsetTop + targetCell.offsetHeight)
+                    targetCell.scrollIntoView({block: "end", inline: "nearest", behavior: "smooth"}); break
         } } catch (exception) { return }
 
-        if(targetCell) chooseNewCell(targetCell, event)
-
-        function selectLeftCell() {
-            targetCell = sheet.getCell(cellEnd.rowIndex,cellEnd.cellIndex-1)
-            if (sheet.scrollLeft > targetCell.offsetLeft)
-                targetCell.scrollIntoView({block: "nearest", inline: "start", behavior: "smooth"})
-        }
-        function selectTopCell() {
-            targetCell = sheet.getCell(cellEnd.rowIndex-1,cellEnd.cellIndex)
-            if (sheet.scrollTop > targetCell.offsetTop)
-                targetCell.scrollIntoView({block: "start", inline: "nearest", behavior: "smooth"})
-        }
-        function selectRightCell() {
-            targetCell = sheet.getCell(cellEnd.rowIndex,cellEnd.cellIndex+1)
-            if (sheet.scrollLeft + sheet.clientWidth < targetCell.offsetLeft + targetCell.offsetWidth)
-                targetCell.scrollIntoView({block: "nearest", inline: "end", behavior: "smooth"})
-        }
-        function selectBottomCell() {
-            targetCell = sheet.getCell(cellEnd.rowIndex+1,cellEnd.cellIndex)
-            if (sheet.scrollTop + sheet.clientHeight < targetCell.offsetTop + targetCell.offsetHeight)
-                targetCell.scrollIntoView({block: "end", inline: "nearest", behavior: "smooth"})
-        }
+        selectNewCell(targetCell, event)
     }
 
-    function chooseNewCell(cell, event) {
+    function selectNewCell(cell, event) {
         // If the shift button is not pressed, will start selecting a new matrix
         if (!event.shiftKey) {
-            cellStart = cell
+            matrix.cellA = cell
         }
-        cellEnd = cell
+        matrix.cellB = cell
         selectCellsMatrix()
     }
 
     // Most important function here
     function selectCellsMatrix(event) {
         if (event != null) {
-            const targetCell = event.target.closest("td")
-            if (targetCell === null || targetCell === cellEnd) return
-            cellEnd = targetCell
+            const targetCell = workbook.getCellFromEvent(event)
+            if (targetCell === null || targetCell === matrix.cellB) return
+            matrix.cellB = targetCell
         }
-        const matrixTopId    = (cellStart.rowIndex <= cellEnd.rowIndex) ? cellStart.rowIndex : cellEnd.rowIndex,
-              matrixBottomId = (cellStart.rowIndex <= cellEnd.rowIndex) ? cellEnd.rowIndex   : cellStart.rowIndex,
-              matrixLeftId   = (cellStart.cellIndex <= cellEnd.cellIndex) ? cellStart.cellIndex : cellEnd.cellIndex,
-              matrixRightId  = (cellStart.cellIndex <= cellEnd.cellIndex) ? cellEnd.cellIndex   : cellStart.cellIndex
-
         // Removing selects that remained after the previous matrix filling
-        table.querySelectorAll("td.selected").forEach(cell => cell.classList.remove("selected"))
+        matrix.clear()
         // Filling the matrix from left top cell to right bottom cell
-        for (let i = matrixTopId; i <= matrixBottomId; i++) {
-            for (let j = matrixLeftId; j <= matrixRightId; j++) {
-                table.rows[i].cells[j].classList.add("selected")
+        for (let i = matrix.topId; i <= matrix.bottomId; i++) {
+            for (let j = matrix.leftId; j <= matrix.rightId; j++) {
+                matrix.addCell(sheet.rows[i].cells[j])
             }
         }
     }
-
-    // A simple solution should be to just add all selected cells to Ranges, then push these Ranges into Selection.
-    // But multi-selection, that allows to add more than one range into Selection, only works in Firefox.
-    // So I decided next: each time before copying, a new table will be created, filled with selected cells,
-    // and pushed into Selection as a single Range. This table will be placed in the <clipboard> element
-    function copySelectedCells() {
-        const selectedCells = sheet.getSelectedCells(),
-              copyingTable  = document.createElement("table")
-        let   copyingRow    = document.createElement("tr")
-
-        selectedCells.forEach(cell => {
-
-            // if (copyingRow.index !== cell.rowId)/
-            const copyingCell = cell.cloneNode(true)
-            copyingCell.classList.remove("selected")
-            //
-
-            copyingTable.append(copyingCell)
-            console.log(cell)
-        })
-        // copyingTable.append(copyingRow)
-
-        document.querySelector("clipboard").replaceChildren(copyingTable)
-
-        const range = new Range()
-        range.selectNode(copyingTable)
-        window.getSelection().removeAllRanges()
-        window.getSelection().addRange(range)
-    }
 }
+
+// This allows to copy selected cells
+document.addEventListener("copy", () => {
+    // Each time before copying will be created new table, filled with selected cells,
+    // and pushed into Selection as a single Range. This table will be placed in the <clipboard> element
+    const matrix = workbook.activeSheet.selectsMatrix
+    const copyingTable = document.createElement("table")
+    let copyingRow = document.createElement("tr"),
+        lastRowIndex = matrix.cells[0].rowIndex
+
+    matrix.cells.forEach(cell => {
+        if (lastRowIndex !== cell.rowIndex){
+            copyingTable.append(copyingRow)
+            copyingRow = document.createElement("tr")
+            lastRowIndex = cell.rowIndex
+        }
+        const copyingCell = cell.cloneNode(true)
+        copyingCell.textContent = cell.textContent
+        copyingCell.classList.remove("selected")
+        copyingRow.append(copyingCell)
+    })
+    copyingTable.append(copyingRow)
+    document.querySelector("clipboard").replaceChildren(copyingTable)
+    // Copying
+    const range = new Range()
+    range.selectNode(copyingTable)
+    console.log(range)
+    window.getSelection().removeAllRanges()
+    window.getSelection().addRange(range)
+})

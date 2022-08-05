@@ -1,7 +1,7 @@
 // A rows' sorter means a button that sorts rows when clicked
 export function addSortersToSheet(sheet){
     const rows = sheet.rows
-    rows[0].forEach(cell => {
+    for (const cell of rows[0].cells) {
         // Creating row sorter — div button with image on it
         const sorter = document.createElement("div")
         sorter.append(document.createElement("img"))
@@ -72,7 +72,7 @@ export function addSortersToSheet(sheet){
                 }
             }
         }
-    })
+    }
 }
 
 

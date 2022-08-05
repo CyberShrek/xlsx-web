@@ -33,10 +33,9 @@ body {
 
 #sheets-pad td {
     cursor: cell;
-    /*user-select: none;*/
     padding: 5px;
-    border-right: 1px solid gray;
-    border-bottom: 1px solid gray;
+    border-right: thin solid;
+    border-bottom: thin solid;
     background-color: white;
     outline: 0 solid var(--theme-color);
     transition: 0.1s linear;
@@ -44,6 +43,10 @@ body {
 #sheets-pad td.selected {
     z-index: 1;
     outline: 5px solid var(--theme-color);
+}
+
+#sheets-pad td .content {
+    user-select: none;
 }
 
 #sheets-pad .header{
@@ -80,6 +83,10 @@ body {
     outline: 2px solid var(--theme-color);
     border-radius: 4px;
     transform: translateX(-100%);
+}
+
+#sheets-pad clipboard td {
+    border: thin solid;
 }
 
 #tabs-pad {
