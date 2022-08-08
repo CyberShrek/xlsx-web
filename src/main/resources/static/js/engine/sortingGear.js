@@ -1,5 +1,4 @@
 // A rows' sorter means a button that sorts rows when clicked
-
 export function addSortersToSheet(sheet){
     const rows = sheet.rows
     for (const cell of rows[0].cells) {

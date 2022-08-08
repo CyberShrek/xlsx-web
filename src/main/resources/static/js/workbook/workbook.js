@@ -1,4 +1,4 @@
-const // Usages
+export const // Usages
     sheetsPad = document.querySelector("#sheets-pad"),
     tabsPad   = document.querySelector("#tabs-pad")
 
@@ -45,12 +45,3 @@ export const workbook = {
         for (const row of sheet.rows) sheet.defineRow(row)
     }
 }
-
-// Defining
-workbook.sheets.forEach(sheet => workbook.defineSheet(sheet))
-
-// Adding EventListeners to tabs pad
-tabsPad.querySelectorAll(".tab").forEach(
-    tab => tab.addEventListener("click", () => {
-        workbook.activeSheet = workbook.getSheetByName(tab.textContent)
-    }))

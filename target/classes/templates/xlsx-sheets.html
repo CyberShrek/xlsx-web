@@ -39,10 +39,13 @@
         </div>
     </th:block>
     <div class="buttons">
-        <div class="button download">
+        <form class="button download"
+              method="get"
+              action="#" th:action="@{/download}"
+              onclick="this.submit()">
             <img th:src="@{img/download.png}">
             Экспортировать
-        </div>
+        </form>
         <div class="button edit">
             <img th:src="@{img/edit.png}">
             Редактировать
