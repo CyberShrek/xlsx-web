@@ -1,4 +1,5 @@
 // A rows' sorter means a button that sorts rows when clicked
+
 export function addSortersToSheet(sheet){
     const rows = sheet.rows
     for (const cell of rows[0].cells) {
@@ -17,46 +18,36 @@ export function addSortersToSheet(sheet){
         cell.append(sorter)
 
         function sortRows() {
-            const
-                columnIndex  = cell.cellIndex,
-                // Sorting position when comparing 2 rows and updating sorter's view
-                sortPosition = cultivateSortPosition(),
-                sortedRows   = Array.from(rows).sort(function (rowA, rowB) {
-                    if (rowA.rowIndex === 0) // Pass the header
-                        return 0
-                    else if (sortPosition === 0) { // Returning the origin positions
-                        return Number(rowA.getAttribute("originIndex"))
-                             - Number(rowB.getAttribute("originIndex"))
-                    } else {
-                        const cellTextA = rowA.cells[columnIndex].textContent.trim(),
-                            cellTextB = rowB.cells[columnIndex].textContent.trim()
-                        if (cellTextA === '') return sortPosition // Avoiding the void
-                        if (cellTextB === '') return -sortPosition
-                        if (cellTextA > cellTextB) return sortPosition
-                        if (cellTextA < cellTextB) return -sortPosition
-                        return 0
-                    }
-                })
-            // Changing origin rows to sorted rows
-            for (let i = 0; i < sortedRows.length; i++) {
-                rows[i].replaceWith(sortedRows[i].cloneNode(true))
-            }
-
-            // Updates sorters, assigns original indexes to rows (if the sorter was clicked for the first time) and returns sortPosition
-            function cultivateSortPosition() {
-                // Reset other sorters
-                for (const anySorter of sheet.querySelectorAll(".sorter")) {
-                    if (anySorter !== sorter) {
-                        anySorter.classList.remove("sorted")
-                        anySorter.applyDirection("a-z")
-                    }
+            // Reset other sorters
+            for (const anySorter of sheet.querySelectorAll(".sorter")) {
+                if (anySorter !== sorter) {
+                    anySorter.classList.remove("sorted")
+                    anySorter.applyDirection("a-z")
                 }
+            }
+            const position = cultivateSortPosition() // Sorting position when comparing 2 rows
+            Array.from(rows).slice(1) // Getting rows Array excluding the header row
+                .sort(function(rowA, rowB) {
+                // Returning the origin positions
+                if (position === 0) return rowA.originIndex - rowB.originIndex
+
+                const cellTextA = rowA.cells[cell.cellIndex].text.trim(),
+                      cellTextB = rowB.cells[cell.cellIndex].text.trim()
+
+                if (cellTextA === '') return  position // Avoiding the void
+                if (cellTextB === '') return -position
+                if (cellTextA > cellTextB) return  position
+                if (cellTextA < cellTextB) return -position
+                return 0
+            }).forEach(row => sheet.table.append(row))
+
+            // Updates sorter, assigns original indexes to rows and returns sortPosition
+            function cultivateSortPosition() {
                 if (!sorter.classList.contains("sorted")) {
                     sorter.classList.add("sorted")
                     // Assigning original indexes to be able to return original positions. Starts with 1 because 0 is a header
                     for (let i = 1; i < rows.length; i++) {
-                        // Using a plain attribute as an origin index to avoid its lost after copying
-                        rows[i].setAttribute("originIndex", i)
+                        rows[i].originIndex = i
                     }
                     return 1
                 } else {
@@ -74,5 +65,3 @@ export function addSortersToSheet(sheet){
         }
     }
 }
-
-

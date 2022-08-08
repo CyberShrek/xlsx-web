@@ -82,7 +82,7 @@ body {
     background-color: white;
     outline: 2px solid var(--theme-color);
     border-radius: 4px;
-    transform: translateX(-100%);
+    transform: translateX(-100%) translateY(-20%);
 }
 
 #sheets-pad clipboard td {
