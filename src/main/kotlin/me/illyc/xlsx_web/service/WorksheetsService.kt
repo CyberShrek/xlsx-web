@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class XlsxService {
+class WorksheetsService {
 
     private val catalogName = "catalog.xlsx"
     var converter = PoiConverter()

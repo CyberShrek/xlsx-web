@@ -1,0 +1,95 @@
+body.editor-mode {
+    grid-template-columns: var(--editor-panel-width)   calc(100% - var(--editor-panel-width));
+}
+
+editor-pad {
+    grid-area: var(--editor-pad-grid-area);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background: gainsboro;
+    border-right: var(--border);
+    filter: drop-shadow(var(--shadow));
+    /* Hidden state */
+    z-index: -10;
+    width: var( --editor-panel-width);
+    transform: translateX(-100%);
+    transition: 0.2s;
+} body.editor-mode editor-pad {
+      /* Active state */
+      z-index: 10;
+      transform: translateX(0);
+  }
+
+editor-pad * {
+    user-select: none;
+}
+
+editor-pad section {
+    border-top: var(--border);
+    border-bottom: var(--border);
+}
+
+editor-pad .palette{
+    display: flex;
+    flex-flow: column nowrap;
+    align-self: center;
+}
+editor-pad .palette value{
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    text-align: center;
+}
+
+editor-pad cells-editor .button,
+editor-pad cells-editor:hover .palette value,
+editor-pad .palette value.active {
+    opacity: 1;
+    height: calc(var(--editor-panel-width) / 3 - 1px);
+    width:  calc(var(--editor-panel-width) / 3 - 1px);
+    padding: 2px;
+    text-align: center;
+}
+
+editor-pad rows-editor .button {
+    height: calc(var(--editor-panel-width) / 2 - 1px);
+    width:  calc(var(--editor-panel-width) / 2 - 1px);
+}
+
+editor-pad rows-editor,
+editor-pad cells-editor{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    width: 100%;
+    padding: 5px 0;
+}
+editor-pad .button,
+editor-pad .palette value {
+    cursor: pointer;
+    border-radius: 100px;
+    outline: 0 solid var(--theme-color);
+    transition: opacity 0.1s, height 0.3s, padding 0.3s, background-color 0.1s, outline 0.1s;
+}
+editor-pad .button:hover,
+editor-pad .palette value:hover{
+    background-color: ghostwhite;
+}
+editor-pad .button.active,
+editor-pad cells-editor:hover .palette value.active{
+    z-index: 1;
+    outline: 3px solid var(--theme-color);
+}
+
+editor-pad img {
+    height: 100%;
+    width: 100%;
+}
+
+editor-pad divider {
+    display: block;
+    margin: 0 5%;
+    width: 90%;
+    border-bottom: var(--border);
+}

@@ -69,7 +69,7 @@ class PoiConverter {
         cell.cellStyle = style
     }
 
-    // "Simple value" is meant the original value devoid of specific rudiments not used in the UI
+    // "Simple value" is the original value devoid of specific rudiments not used on the client
     fun getSimpleCellValue(cell: XSSFCell): String? {
         return when (cell.cellTypeEnum) {
             CellType.NUMERIC -> {
@@ -78,11 +78,11 @@ class PoiConverter {
                 if (value % 1 == 0.0) value.toInt().toString()
                 else value.toString()
             }
-            CellType.BOOLEAN -> cell.booleanCellValue.toString()
             else -> cell.stringCellValue
         }
     }
-    // Same as the getSimpleCellValue() but backwards
+
+    // Same as the getSimpleCellValue() but vise versa
     fun setSimpleCellValue(value: String, cell: XSSFCell?) {
         if (cell == null) return
         if (value.matches(Regex("([-]?[0-9]+[.,][0-9]+)|([-]?[0-9]+)"))) // if value is number

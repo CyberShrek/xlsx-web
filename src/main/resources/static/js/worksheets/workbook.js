@@ -1,6 +1,6 @@
 export const // Usages
-    sheetsPad = document.querySelector("#sheets-pad"),
-    tabsPad   = document.querySelector("#tabs-pad")
+    sheetsPad = document.querySelector("sheets-pad"),
+    tabsPad   = document.querySelector("tabs-pad")
 
 export const workbook = {
     get sheets(){

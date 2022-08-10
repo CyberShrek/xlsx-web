@@ -1,5 +1,10 @@
 :root {
+    --editor-panel-width: 60px;
     --tabs-pad-height: 30px;
+
+    --sheet-pad-grid-area: SP;
+    --tabs-pad-grid-area: TP;
+    --editor-pad-grid-area: EP;
 
     /* THEME: */
     --font: Calibri;
@@ -10,28 +15,38 @@
 
 body {
     display: grid;
-    grid-template-rows: calc(100vh - var(--tabs-pad-height) - 1px) var(--tabs-pad-height);
-    grid-template-columns: 100%;
+    grid-template-columns: 0 100%;
+    grid-template-rows:
+        calc(100vh - var(--tabs-pad-height) - 1px)
+        var(--tabs-pad-height);
+    grid-template-areas:
+        "EP SP"
+        "EP TP";
+
     margin: 0;
     font-family: var(--font);
     overflow: hidden;
+    transition: 0.2s;
 }
 
-#sheets-pad .sheet {
+sheets-pad {
+    grid-area: var(--sheet-pad-grid-area);
+}
+
+sheets-pad .sheet {
     display: none;
 }
-#sheets-pad .sheet.active {
+sheets-pad .sheet.active {
     display: block;
     height: 100%;
-    width: 100%;
     overflow: auto;
 }
 
-#sheets-pad table {
+sheets-pad table {
     border-spacing: 0;
 }
 
-#sheets-pad td {
+sheets-pad td {
     cursor: cell;
     padding: 5px;
     border-right: thin solid;
@@ -40,26 +55,26 @@ body {
     outline: 0 solid var(--theme-color);
     transition: 0.1s linear;
 }
-#sheets-pad td.selected {
+sheets-pad td.selected {
     z-index: 1;
     outline: 5px solid var(--theme-color);
 }
 
-#sheets-pad td .content {
+sheets-pad td .content {
     user-select: none;
 }
 
-#sheets-pad .header{
+sheets-pad .header{
     filter: drop-shadow(var(--shadow));
 }
-#sheets-pad .header > td {
+sheets-pad .header > td {
     padding: 5px 20px;
     position: sticky;
     top: 0;
     white-space: nowrap;
 }
 
-#sheets-pad .header .sorter {
+sheets-pad .header .sorter {
     opacity: 0.3;
     user-select: none;
     cursor: pointer;
@@ -67,61 +82,67 @@ body {
     width: 0;
     transition: opacity 0.1s;
 }
-#sheets-pad .header td:hover .sorter, #sheets-pad .header td .sorter.sorted {
+sheets-pad .header td:hover .sorter, sheets-pad .header td .sorter.sorted {
     opacity: 1;
 }
-#sheets-pad .header .sorter > img{
+sheets-pad .header .sorter > img{
     padding: 2px;
     height: 15px;
     width: 15px;
     transform: translateX(-100%) translateY(-100%);
     transition: 0.1s;
 }
-#sheets-pad .header .sorter.sorted > img {
+sheets-pad .header .sorter.sorted > img {
     z-index: 10;
     background-color: white;
     outline: 2px solid var(--theme-color);
-    border-radius: 4px;
+    border-radius: 100px;
     transform: translateX(-100%) translateY(-20%);
 }
 
-#sheets-pad clipboard td {
+sheets-pad clipboard td {
     border: thin solid;
 }
 
-#tabs-pad {
+tabs-pad {
+    grid-area: var(--tabs-pad-grid-area);
     display: flex;
-    height: 100%;
     background: gainsboro;
     border-top: var(--border);
+    filter: drop-shadow(var(--shadow));
 }
 
-#tabs-pad .tab {
+tabs-pad .tab {
     border-right: var(--border);
     white-space: nowrap;
 }
-#tabs-pad .tab:hover {
+tabs-pad .tab:hover {
     background-color: ghostwhite;
 }
-#tabs-pad .tab.active {
+tabs-pad .tab.active {
     cursor: default;
     border-top: 5px solid var(--theme-color);
     background-color: ghostwhite;
     filter: drop-shadow(var(--shadow));
 }
 
-#tabs-pad .buttons {
+tabs-pad .buttons {
     display: flex;
     margin-left: auto;
 }
-#tabs-pad .button {
+tabs-pad .button {
     outline: 0 solid var(--theme-color);
 }
-#tabs-pad .button img {
+tabs-pad .button.active {
+    background-color: var(--theme-color);
+    border-radius: 3px;
+    color: white;
+}
+tabs-pad .button img {
     height: 25px;
     width: 25px;
 }
-#tabs-pad .button:hover {
+tabs-pad .button:hover {
     outline: 5px solid var(--theme-color);
     background-color: var(--theme-color);
     filter: drop-shadow(var(--shadow));
@@ -129,8 +150,8 @@ body {
     color: white;
 }
 
-#tabs-pad .tab,
-#tabs-pad .button {
+tabs-pad .tab,
+tabs-pad .button {
     user-select: none;
     display: flex;
     align-items: center;
@@ -138,7 +159,7 @@ body {
     padding: 0 5px;
     transition: 0.2s;
 }
-#tabs-pad .tab:hover,
-#tabs-pad .button:hover {
+tabs-pad .tab:hover,
+tabs-pad .button:hover {
     padding: 0 15px;
 }

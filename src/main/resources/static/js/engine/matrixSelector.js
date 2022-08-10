@@ -1,5 +1,5 @@
 // Adds the cell selection mechanism like in Excel to sheet
-import {workbook} from "../workbook/workbook.js";
+import {workbook} from "../worksheets/workbook.js";
 
 export function addMatrixSelectorToSheet(sheet){
     // The matrix of selected cells
@@ -34,7 +34,7 @@ export function addMatrixSelectorToSheet(sheet){
         }
     }
     // Allows to get this matrix from the sheet
-    sheet.selectsMatrix = matrix
+    sheet.selectionMatrix = matrix
 
     sheet.table.addEventListener("mousedown", startSelection) // Selection will start by mouse button down
     window.addEventListener("mouseup", endSelection)     // And will end by button up in any zones of the window
@@ -43,7 +43,7 @@ export function addMatrixSelectorToSheet(sheet){
     function startSelection(event) {
         const targetCell = workbook.getCellFromEvent(event)
         if (!targetCell) return
-        selectNewCell(targetCell, event)
+        updateSelection(targetCell, event)
         // When the mouse cursor moves over the cells, these cells are included in the matrix
         sheet.table.addEventListener("mousemove", selectCellsMatrix)
     }
@@ -79,16 +79,17 @@ export function addMatrixSelectorToSheet(sheet){
                     targetCell.scrollIntoView({block: "end", inline: "nearest", behavior: "smooth"}); break
         } } catch (exception) { return }
 
-        selectNewCell(targetCell, event)
+        updateSelection(targetCell, event)
     }
 
-    function selectNewCell(cell, event) {
+    function updateSelection(cell, event) {
         // If the shift button is not pressed, will start selecting a new matrix
         if (!event.shiftKey) {
             matrix.cellA = cell
         }
         matrix.cellB = cell
         selectCellsMatrix()
+        sheet.dispatchEvent(new Event("selectionUpdate"))
     }
 
     // Most important function here
@@ -113,7 +114,7 @@ export function addMatrixSelectorToSheet(sheet){
 document.addEventListener("copy", () => {
     // Each time before copying will be created new table, filled with selected cells,
     // and pushed into Selection as a single Range. This table will be placed in the <clipboard> element
-    const matrix = workbook.activeSheet.selectsMatrix
+    const matrix = workbook.activeSheet.selectionMatrix
     const copyingTable = document.createElement("table")
     let copyingRow = document.createElement("tr"),
         lastRowIndex = matrix.cells[0].rowIndex
