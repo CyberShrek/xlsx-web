@@ -1,0 +1,104 @@
+body.editor-mode {
+    grid-template-columns: var(--editor-panel-width)   calc(100% - var(--editor-panel-width));
+}
+editor-pad {
+    user-select: none;
+    grid-area: var(--editor-pad-area);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background: gainsboro;
+    text-align: center;
+    border-right: var(--border);
+    filter: drop-shadow(var(--shadow));
+    /* Hidden state */
+    z-index: -10;
+    width: var( --editor-panel-width);
+    transform: translateX(-100%);
+    transition: 0.2s;
+} body.editor-mode editor-pad {
+      /* Active state */
+      z-index: 10;
+      transform: translateX(0);
+  }
+
+editor-pad section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 5px 0;
+    border-top: var(--border);
+    border-bottom: var(--border);
+} editor-pad section > dash {
+      display: block;
+      margin: 5px 5%;
+      width: 90%;
+      border-bottom: var(--border);
+  }
+
+/* PALETTES */
+editor-pad .palette{
+    display: flex;
+    transition: 0.2s;
+    backdrop-filter: blur(2px);
+}
+editor-pad .palette:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+
+    backface-visibility: 0.5;
+    transform: translateX(calc(50% - var(--editor-panel-width) / 3));
+}
+
+editor-pad .palette value{
+    opacity: 0;
+    width: 0;
+    margin: 3px 0;
+    padding: 3px 0;
+}
+editor-pad .palette value.active,
+editor-pad .palette:hover value{
+    opacity: 1;
+    height: calc(var(--editor-panel-width) / 3);
+    width:  calc(var(--editor-panel-width) / 3);
+    margin: 3px;
+    padding: 3px;
+}
+editor-pad .palette:hover value.active {
+    outline: 3px solid var(--theme-color);
+}
+
+/* TEXT-STYLES */
+editor-pad .font-style,
+editor-pad .align-text{
+    height: calc(var(--editor-panel-width) / 3);
+    width:  calc(var(--editor-panel-width) / 3);
+    padding: 2px;
+}
+
+/* ROWS-COLUMNS */
+editor-pad .row-column {
+    height: calc(var(--editor-panel-width) / 2 - 1px);
+    width:  calc(var(--editor-panel-width) / 2 - 1px);
+}
+
+/* COMMONS */
+editor-pad .button,
+editor-pad .palette value {
+    cursor: pointer;
+    border-radius: 100px;
+    outline: 0 solid var(--theme-color);
+    transition: 0.2s, background-color 0.1s, outline 0.1s;
+}
+editor-pad .button:hover,
+editor-pad .palette value:hover{
+    background-color: ghostwhite;
+}
+editor-pad .button.active,
+editor-pad cells-editor:hover .palette value.active{
+    z-index: 1;
+    outline: 3px solid var(--theme-color);
+}
+editor-pad img {
+    height: 100%;
+    width: 100%;
+}

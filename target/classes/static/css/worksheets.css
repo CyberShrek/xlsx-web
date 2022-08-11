@@ -1,0 +1,165 @@
+:root {
+    --editor-panel-width: 60px;
+    --tabs-pad-height: 30px;
+
+    --sheet-pad-area:  SP;
+    --tabs-pad-area:   TP;
+    --editor-pad-area: EP;
+
+    /* THEME: */
+    --font: Calibri;
+    --theme-color: limegreen;
+    --border: 1px solid darkgray;
+    --shadow: 0 0 3px darkgray;
+}
+
+body {
+    display: grid;
+    grid-template-columns: 0 100%;
+    grid-template-rows:
+        calc(100vh - var(--tabs-pad-height) - 1px)
+        var(--tabs-pad-height);
+    grid-template-areas:
+        "EP SP"
+        "EP TP";
+
+    margin: 0;
+    font-family: var(--font);
+    overflow: hidden;
+    transition: 0.2s;
+}
+
+sheets-pad {
+    grid-area: var(--sheet-pad-area);
+}
+
+sheets-pad .sheet {
+    display: none;
+}
+sheets-pad .sheet.active {
+    display: block;
+    height: 100%;
+    overflow: auto;
+}
+
+sheets-pad table {
+    border-spacing: 0;
+}
+
+sheets-pad td {
+    cursor: cell;
+    padding: 5px;
+    border-right: thin solid;
+    border-bottom: thin solid;
+    background-color: white;
+    outline: 0 solid var(--theme-color);
+    transition: 0.1s linear;
+}
+sheets-pad td.selected {
+    z-index: 1;
+    outline: 5px solid var(--theme-color);
+}
+
+sheets-pad td .content {
+    user-select: none;
+}
+
+sheets-pad .header{
+    filter: drop-shadow(var(--shadow));
+}
+sheets-pad .header > td {
+    padding: 5px 20px;
+    position: sticky;
+    top: 0;
+    white-space: nowrap;
+}
+
+sheets-pad .header .sorter {
+    opacity: 0.3;
+    user-select: none;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+    transition: opacity 0.1s;
+}
+sheets-pad .header td:hover .sorter, sheets-pad .header td .sorter.sorted {
+    opacity: 1;
+}
+sheets-pad .header .sorter > img{
+    padding: 2px;
+    height: 15px;
+    width: 15px;
+    transform: translateX(-100%) translateY(-100%);
+    transition: 0.1s;
+}
+sheets-pad .header .sorter.sorted > img {
+    z-index: 10;
+    background-color: white;
+    outline: 2px solid var(--theme-color);
+    border-radius: 100px;
+    transform: translateX(-100%) translateY(-20%);
+}
+
+sheets-pad clipboard td {
+    border: thin solid;
+}
+
+tabs-pad {
+    grid-area: var(--tabs-pad-area);
+    display: flex;
+    background: gainsboro;
+    border-top: var(--border);
+    filter: drop-shadow(var(--shadow));
+}
+
+tabs-pad .tab {
+    border-right: var(--border);
+    white-space: nowrap;
+}
+tabs-pad .tab:hover {
+    background-color: ghostwhite;
+}
+tabs-pad .tab.active {
+    cursor: default;
+    border-top: 5px solid var(--theme-color);
+    background-color: ghostwhite;
+    filter: drop-shadow(var(--shadow));
+}
+
+tabs-pad .buttons {
+    display: flex;
+    margin-left: auto;
+}
+tabs-pad .button {
+    outline: 0 solid var(--theme-color);
+}
+tabs-pad .button.active {
+    background-color: var(--theme-color);
+    border-radius: 3px;
+    color: white;
+}
+tabs-pad .button img {
+    height: 25px;
+    width: 25px;
+}
+tabs-pad .button:hover {
+    outline: 5px solid var(--theme-color);
+    background-color: var(--theme-color);
+    filter: drop-shadow(var(--shadow));
+    border-radius: 3px;
+    color: white;
+}
+
+tabs-pad .tab,
+tabs-pad .button {
+    user-select: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0 5px;
+    transition: 0.2s;
+}
+tabs-pad .tab:hover,
+tabs-pad .button:hover {
+    padding: 0 15px;
+}
