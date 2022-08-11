@@ -37,7 +37,7 @@ editorActivator.addEventListener("click", () => {
                     import("./worksheets/editor/starter.js")
                     activate()
                 }
-                else alert(ajax.responseText)
+                else if (ajax.status !== 401) alert(ajax.responseText)
             }
         }
     }

@@ -2,9 +2,9 @@
     --editor-panel-width: 60px;
     --tabs-pad-height: 30px;
 
-    --sheet-pad-grid-area: SP;
-    --tabs-pad-grid-area: TP;
-    --editor-pad-grid-area: EP;
+    --sheet-pad-area:  SP;
+    --tabs-pad-area:   TP;
+    --editor-pad-area: EP;
 
     /* THEME: */
     --font: Calibri;
@@ -30,7 +30,7 @@ body {
 }
 
 sheets-pad {
-    grid-area: var(--sheet-pad-grid-area);
+    grid-area: var(--sheet-pad-area);
 }
 
 sheets-pad .sheet {
@@ -105,7 +105,7 @@ sheets-pad clipboard td {
 }
 
 tabs-pad {
-    grid-area: var(--tabs-pad-grid-area);
+    grid-area: var(--tabs-pad-area);
     display: flex;
     background: gainsboro;
     border-top: var(--border);
