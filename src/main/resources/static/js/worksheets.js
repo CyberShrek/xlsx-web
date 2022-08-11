@@ -1,13 +1,5 @@
-import {tabsPad, workbook} from "./worksheets/workbook.js"
-import {addSortersToSheet} from "./engine/sortingGear.js"
-import {addMatrixSelectorToSheet} from "./engine/matrixSelector.js"
-
-// Starting the sheets pad
-workbook.sheets.forEach(sheet => {
-    workbook.defineSheet(sheet)
-    addSortersToSheet(sheet)
-    addMatrixSelectorToSheet(sheet)
-})
+import {tabsPad, workbook} from "./workbook"
+import "./workbook/webSocket.js"
 
 // Starting the tabs pad
 tabsPad.querySelectorAll(".tab").forEach(
@@ -34,7 +26,7 @@ editorActivator.addEventListener("click", () => {
             ajax.onerror=() => alert(ajax.responseText)
             ajax.onload=() => {
                 if (ajax.status === 200) {
-                    import("./worksheets/editor/starter.js")
+                    import("./editor")
                     activate()
                 }
                 else if (ajax.status !== 401) alert(ajax.responseText)

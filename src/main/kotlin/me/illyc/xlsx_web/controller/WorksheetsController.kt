@@ -17,7 +17,7 @@ class WorksheetsController (private val service : WorksheetsService) {
         return "worksheets.html"
     }
 
-    // Returns a stream allowing the client to download the xlxs-catalog file
+    // Returns a stream allowing the webSocket to download the xlxs-catalog file
     @GetMapping("/file")
     fun downloadCatalog(response: HttpServletResponse) {
         response.setHeader("Content-disposition", "attachment; filename=Catalog.xlsx")

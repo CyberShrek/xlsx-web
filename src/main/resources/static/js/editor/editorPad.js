@@ -1,5 +1,5 @@
 // Inserting a link to editor's css
-document.querySelector("head").insertAdjacentHTML("beforeend",
+document.head.insertAdjacentHTML("beforeend",
     `<link rel="stylesheet" href="css/worksheets-editor.css"/>`)
 
 // Inserting the editor panel

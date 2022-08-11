@@ -1,5 +1,5 @@
 import {editorPad} from "./editorPad.js"
-import {workbook} from "../workbook.js"
+import {workbook} from "../workbook"
 
 
 // Adding the styles updaters

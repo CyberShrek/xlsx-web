@@ -1,9 +1,9 @@
-// Adds the cell selection mechanism like in Excel to sheet
-import {workbook} from "../worksheets/workbook.js";
+import {workbook} from "./index.js"
 
+// Adds the cell selection mechanism like in Excel to sheet
 export function addMatrixSelectorToSheet(sheet){
     // The matrix of selected cells
-    const matrix = {
+    sheet.selectionMatrix = {
         cells: [],
         addCell(cell){
             cell.classList.add("selected")
@@ -33,8 +33,7 @@ export function addMatrixSelectorToSheet(sheet){
             return (this.cellA.cellIndex <= this.cellB.cellIndex) ? this.cellB.cellIndex : this.cellA.cellIndex
         }
     }
-    // Allows to get this matrix from the sheet
-    sheet.selectionMatrix = matrix
+    const matrix = sheet.selectionMatrix
 
     sheet.table.addEventListener("mousedown", startSelection) // Selection will start by mouse button down
     window.addEventListener("mouseup", endSelection)     // And will end by button up in any zones of the window

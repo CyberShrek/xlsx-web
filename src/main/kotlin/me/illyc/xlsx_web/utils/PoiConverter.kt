@@ -69,7 +69,7 @@ class PoiConverter {
         cell.cellStyle = style
     }
 
-    // "Simple value" is the original value devoid of specific rudiments not used on the client
+    // "Simple value" is the original value devoid of specific rudiments not used on the webSocket
     fun getSimpleCellValue(cell: XSSFCell): String? {
         return when (cell.cellTypeEnum) {
             CellType.NUMERIC -> {
