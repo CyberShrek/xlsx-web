@@ -23,10 +23,4 @@ class WorksheetsController (private val service : WorksheetsService) {
         response.setHeader("Content-disposition", "attachment; filename=Catalog.xlsx")
         response.outputStream.use { stream -> service.workbook.write(stream) }
     }
-
-    // Returns OK(200) if the server permits edition
-    @GetMapping("/editor")
-    fun getPermissionToEdit(response: HttpServletResponse){
-        response.status = 200
-    }
 }

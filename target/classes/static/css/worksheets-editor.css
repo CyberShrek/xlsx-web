@@ -40,12 +40,8 @@ editor-pad section {
 editor-pad .palette{
     display: flex;
     transition: 0.2s;
-    backdrop-filter: blur(2px);
 }
 editor-pad .palette:hover {
-    background-color: rgba(255, 255, 255, 0.5);
-
-    backface-visibility: 0.5;
     transform: translateX(calc(50% - var(--editor-panel-width) / 3));
 }
 
@@ -62,9 +58,7 @@ editor-pad .palette:hover value{
     width:  calc(var(--editor-panel-width) / 3);
     margin: 3px;
     padding: 3px;
-}
-editor-pad .palette:hover value.active {
-    outline: 3px solid var(--theme-color);
+    background-color: ghostwhite;
 }
 
 /* TEXT-STYLES */
@@ -94,7 +88,7 @@ editor-pad .palette value:hover{
     background-color: ghostwhite;
 }
 editor-pad .button.active,
-editor-pad cells-editor:hover .palette value.active{
+editor-pad .palette:hover value.active{
     z-index: 1;
     outline: 3px solid var(--theme-color);
 }

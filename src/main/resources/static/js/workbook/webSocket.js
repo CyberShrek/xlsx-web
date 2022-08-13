@@ -1,5 +1,4 @@
 
+const webSocket = new WebSocket(`ws://${document.location.host + document.location.pathname}editor`)
 
-export const webSocket = {
-
-}
+webSocket.onmessage

@@ -1,8 +1,10 @@
-// Inserting a link to editor's css
+// A link to editor's css
+import {workbook} from "../workbook/index.js";
+
 document.head.insertAdjacentHTML("beforeend",
     `<link rel="stylesheet" href="css/worksheets-editor.css"/>`)
 
-// Inserting the editor panel
+// Editor pad
 document.body.insertAdjacentHTML("afterbegin", `<editor-pad>
     <section>
         <font-size class="palette" title="Размер шрифта">
@@ -80,7 +82,7 @@ document.body.insertAdjacentHTML("afterbegin", `<editor-pad>
     </section>
 </editor-pad> `)
 
-// Defining the just created editor-pad and it's values
+// Defining the just created editor-pad and it's actionable elements
 export const editorPad = document.querySelector("editor-pad")
 editorPad.fontSizePalette        = editorPad.querySelector("font-size")
 editorPad.backgroundColorPalette = editorPad.querySelector("background-color")
@@ -90,3 +92,67 @@ editorPad.fontUnderlineButton    = editorPad.querySelector("font-underline")
 editorPad.alignTextLeftButton    = editorPad.querySelector("align-text-left")
 editorPad.alignTextCenterButton  = editorPad.querySelector("align-text-center")
 editorPad.alignTextRightButton   = editorPad.querySelector("align-text-right")
+
+// EVERYTHING NEXT BELOW IS DEFINING SELECTION FUNCTIONS FOR THESE ELEMENTS
+
+editorPad.selectFontSize=(fontSize) => {
+    for (const paletteCell of editorPad.fontSizePalette.querySelectorAll("value")) {
+        if (paletteCell.textContent === fontSize.replace("pt", "")) paletteCell.classList.add("active")
+        else paletteCell.classList.remove("active")
+    }
+}
+editorPad.selectBackground=(background) => {
+    for (const paletteCell of editorPad.backgroundColorPalette.querySelectorAll("value")) {
+        if (paletteCell.style.background === background) paletteCell.classList.add("active")
+        else paletteCell.classList.remove("active")
+    }
+}
+editorPad.selectBold=()      => editorPad.fontBoldButton.classList.add("active")
+editorPad.resetBold=()       => editorPad.fontBoldButton.classList.remove("active")
+editorPad.selectItalic=()    => editorPad.fontItalicButton.classList.add("active")
+editorPad.resetItalic=()     => editorPad.fontItalicButton.classList.remove("active")
+editorPad.selectUnderline=() => editorPad.fontUnderlineButton.classList.add("active")
+editorPad.resetUnderline=()  => editorPad.fontUnderlineButton.classList.remove("active")
+
+editorPad.selectAlignLeft=() => {
+    editorPad.alignTextLeftButton.classList.add("active")
+    editorPad.alignTextCenterButton.classList.remove("active")
+    editorPad.alignTextRightButton.classList.remove("active")
+}
+editorPad.selectAlignCenter=() => {
+    editorPad.alignTextLeftButton.classList.remove("active")
+    editorPad.alignTextCenterButton.classList.add("active")
+    editorPad.alignTextRightButton.classList.remove("active")
+}
+editorPad.selectAlignRight=() => {
+    editorPad.alignTextLeftButton.classList.remove("active")
+    editorPad.alignTextCenterButton.classList.remove("active")
+    editorPad.alignTextRightButton.classList.add("active")
+}
+
+// Updates the displayed values in the pad (fonts, styles, align, etc.) according to an argument style
+editorPad.setStyle=(style)=>{
+    editorPad.selectFontSize(style.fontSize)
+    editorPad.selectBackground(style.background)
+    if (style.fontWeight === "bold") editorPad.selectBold()
+    else editorPad.resetBold()
+
+    if (style.fontStyle === "italic") editorPad.selectItalic()
+    else editorPad.resetItalic()
+
+    if (style.textDecoration === "underline") editorPad.selectUnderline()
+    else editorPad.resetUnderline()
+
+    if      (style.textAlign === "start")  editorPad.selectAlignLeft()
+    else if (style.textAlign === "center") editorPad.selectAlignCenter()
+    else if (style.textAlign === "end")    editorPad.selectAlignRight()
+}
+
+// Adding the styles updater
+workbook.sheets.forEach(sheet => {
+    sheet.addEventListener(workbook.updateEvent.type, ()=>{
+        const cell = sheet.selectionMatrix.cellA
+        if (cell)
+            editorPad.setStyle(cell.style)
+    })
+})

@@ -31,11 +31,11 @@ export function addMatrixSelectorToSheet(sheet){
         },
         get rightId(){
             return (this.cellA.cellIndex <= this.cellB.cellIndex) ? this.cellB.cellIndex : this.cellA.cellIndex
-        }
+        },
     }
     const matrix = sheet.selectionMatrix
 
-    sheet.table.addEventListener("mousedown", startSelection) // Selection will start by mouse button down
+    sheet.addEventListener("mousedown", startSelection) // Selection will start by mouse button down
     window.addEventListener("mouseup", endSelection)     // And will end by button up in any zones of the window
     document.addEventListener("keydown", selectOnArrows) // Allows selecting via pressing the arrows
 
@@ -44,10 +44,10 @@ export function addMatrixSelectorToSheet(sheet){
         if (!targetCell) return
         updateSelection(targetCell, event)
         // When the mouse cursor moves over the cells, these cells are included in the matrix
-        sheet.table.addEventListener("mousemove", selectCellsMatrix)
+        sheet.addEventListener("mousemove", selectCellsMatrix)
     }
     function endSelection() {
-        sheet.table.removeEventListener("mousemove", selectCellsMatrix)
+        sheet.removeEventListener("mousemove", selectCellsMatrix)
     }
 
     // Moves the selector after the last selected cell according to the pressed arrow
@@ -85,18 +85,19 @@ export function addMatrixSelectorToSheet(sheet){
         // If the shift button is not pressed, will start selecting a new matrix
         if (!event.shiftKey) {
             matrix.cellA = cell
+            // Sending the report that a new matrix has been selected
+            sheet.dispatchEvent(workbook.updateEvent)
         }
         matrix.cellB = cell
         selectCellsMatrix()
-        sheet.dispatchEvent(new Event("selectionUpdate"))
     }
 
-    // Most important function here
+    // Crucial function here
     function selectCellsMatrix(event) {
         if (event != null) {
-            const targetCell = workbook.getCellFromEvent(event)
-            if (targetCell === null || targetCell === matrix.cellB) return
-            matrix.cellB = targetCell
+            if (!(event.target instanceof HTMLTableCellElement) || event.target === matrix.cellB)
+                return
+            matrix.cellB = event.target
         }
         // Removing selects that remained after the previous matrix filling
         matrix.clear()
