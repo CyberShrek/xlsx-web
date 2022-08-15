@@ -17,7 +17,7 @@ body {
     display: grid;
     grid-template-columns: 0 100%;
     grid-template-rows:
-        calc(100vh - var(--tabs-pad-height) - 1px)
+        calc(100vh - var(--tabs-pad-height))
         var(--tabs-pad-height);
     grid-template-areas:
         "EP SP"
@@ -108,13 +108,26 @@ tabs-pad {
     grid-area: var(--tabs-pad-area);
     display: flex;
     background: gainsboro;
-    border-top: var(--border);
     filter: drop-shadow(var(--shadow));
 }
 
-tabs-pad .tab {
+tabs-pad .tabs {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
     border-right: var(--border);
+    scrollbar-width: thin;
+}tabs-pad .tabs::-webkit-scrollbar {
+     height: 7px;
+     border-top: var(--border);
+ }tabs-pad .tabs::-webkit-scrollbar-thumb {
+      background-color: darkgrey;
+  }
+
+tabs-pad .tab {
+    flex-shrink: 0;
     white-space: nowrap;
+    border-left: var(--border);
 }
 tabs-pad .tab:hover {
     background-color: ghostwhite;
@@ -135,12 +148,12 @@ tabs-pad .button {
 }
 tabs-pad .button.active {
     background-color: var(--theme-color);
-    border-radius: 3px;
     color: white;
 }
 tabs-pad .button img {
-    height: 25px;
-    width: 25px;
+    margin: 3px;
+    height: calc(var(--tabs-pad-height) - 6px);
+    width: calc(var(--tabs-pad-height) - 6px);
 }
 tabs-pad .button:hover {
     outline: 5px solid var(--theme-color);
@@ -149,7 +162,7 @@ tabs-pad .button:hover {
     border-radius: 3px;
     color: white;
 }
-
+/*  */
 tabs-pad .tab,
 tabs-pad .button {
     user-select: none;

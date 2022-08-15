@@ -130,7 +130,7 @@ editorActivator.addEventListener("click", () => {
             activate()
         else { // getting the editor panel
             const ajax = new XMLHttpRequest()
-            ajax.open("GET", "editor/permission", true)
+            ajax.open("GET", "editor", true)
             ajax.send()
             ajax.onerror=() => alert(ajax.responseText)
             ajax.onload=() => {

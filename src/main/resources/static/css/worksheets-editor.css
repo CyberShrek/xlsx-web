@@ -1,31 +1,53 @@
 body.editor-mode {
     grid-template-columns: var(--editor-panel-width)   calc(100% - var(--editor-panel-width));
 }
+
 editor-pad {
     user-select: none;
     grid-area: var(--editor-pad-area);
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
     background: gainsboro;
     text-align: center;
-    border-right: var(--border);
+    /*     border-right: var(--border); */
     filter: drop-shadow(var(--shadow));
     /* Hidden state */
     z-index: -10;
     width: var( --editor-panel-width);
     transform: translateX(-100%);
     transition: 0.2s;
-} body.editor-mode editor-pad {
+} .editor-mode editor-pad {
       /* Active state */
       z-index: 10;
       transform: translateX(0);
   }
 
+/* COMMONS */
+editor-pad .button,
+editor-pad .palette value {
+    cursor: pointer;
+    border-radius: 100px;
+    outline: 0 solid var(--theme-color);
+    transition: 0.2s, background-color 0.1s, outline 0.1s;
+}
+editor-pad .button:hover,
+editor-pad .palette value:hover{
+    background-color: ghostwhite;
+}
+editor-pad .button.active,
+editor-pad .palette:hover value.active{
+    z-index: 1;
+    outline: 3px solid var(--theme-color);
+}
+editor-pad img {
+    height: 100%;
+}
+
 editor-pad section {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
+    margin: auto 0;
     padding: 5px 0;
     border-top: var(--border);
     border-bottom: var(--border);
@@ -75,24 +97,20 @@ editor-pad .row-column {
     width:  calc(var(--editor-panel-width) / 2 - 1px);
 }
 
-/* COMMONS */
-editor-pad .button,
-editor-pad .palette value {
-    cursor: pointer;
-    border-radius: 100px;
-    outline: 0 solid var(--theme-color);
-    transition: 0.2s, background-color 0.1s, outline 0.1s;
+/* SHEETS */
+editor-pad section.sheet-level {
+    margin: 0;
+    padding: 0;
+    height: var(--tabs-pad-height);
+    background: gainsboro;
+    border-bottom: 0;
 }
-editor-pad .button:hover,
-editor-pad .palette value:hover{
-    background-color: ghostwhite;
-}
-editor-pad .button.active,
-editor-pad .palette:hover value.active{
-    z-index: 1;
-    outline: 3px solid var(--theme-color);
-}
-editor-pad img {
+editor-pad .sheet {
+    flex-grow: 1;
     height: 100%;
-    width: 100%;
+    border-radius: 0;
+}
+editor-pad .sheet img{
+    padding: 5px;
+    height: calc(100% - 10px);
 }

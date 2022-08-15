@@ -63,22 +63,32 @@ document.body.insertAdjacentHTML("afterbegin", `<editor-pad>
     </section>
     <section>
         <add-row class="row-column button"
-             title="Добавление строк">
+             title="Добавить строку">
             <img src="img/add row.png">
         </add-row>
         <add-column class="row-column button"
-             title="Добавление колонок">
+             title="Добавить колонку">
             <img src="img/add column.png">
         </add-column>
         <dash></dash>
         <remove-row class="row-column button"
-             title="Удаление строк">
+             title="Удалить строку">
             <img src="img/remove row.png">
         </remove-row>
         <remove-column class="row-column button"
-             title="Удаление колонок">
+             title="Удалить колонку">
             <img src="img/remove column.png">
         </remove-column>
+    </section>
+    <section class="sheet-level">
+        <remove-sheet class="sheet button"
+            title="Удалить лист">
+            <img src="img/remove sheet.png">
+        </remove-sheet  class="sheet button">
+        <add-sheet class="sheet button"
+            title="Добавить лист">
+            <img src="img/add sheet.png">
+        </add-sheet>
     </section>
 </editor-pad> `)
 

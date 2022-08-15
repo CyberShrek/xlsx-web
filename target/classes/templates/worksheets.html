@@ -31,19 +31,21 @@
     <clipboard></clipboard>
 </sheets-pad>
 <tabs-pad>
-    <th:block th:each="sheet : ${workbook}">
-        <div class="tab"
-             th:name="${sheet.sheetName}"
-             th:text="${sheet.sheetName}"
-        >
-        </div>
-    </th:block>
+    <div class="tabs">
+        <th:block th:each="sheet : ${workbook}">
+            <div class="tab"
+                 th:name="${sheet.sheetName}"
+                 th:text="${sheet.sheetName}"
+            >
+            </div>
+        </th:block>
+    </div>
     <div class="buttons">
         <form class="button download"
               method="get"
               action="#" th:action="@{/file}"
               onclick="this.submit()">
-            <img th:src="@{img/download.png}">
+            <img th:src="@{img/excel.png}">
             Экспортировать
         </form>
         <div class="button edit">

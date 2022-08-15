@@ -6,7 +6,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 
-
 @EnableWebSecurity
 open class Security {
 
@@ -21,6 +20,7 @@ open class Security {
     @Bean
     open fun filterChain(http: HttpSecurity) = http
         .authorizeRequests()
+        .antMatchers("/editor/spreader").permitAll()
         .antMatchers("/editor/**").hasRole("ADMIN")
         .anyRequest().permitAll()
         .and().httpBasic()
