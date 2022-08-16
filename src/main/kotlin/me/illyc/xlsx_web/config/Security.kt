@@ -20,7 +20,6 @@ open class Security {
     @Bean
     open fun filterChain(http: HttpSecurity) = http
         .authorizeRequests()
-        .antMatchers("/editor/spreader").permitAll()
         .antMatchers("/editor/**").hasRole("ADMIN")
         .anyRequest().permitAll()
         .and().httpBasic()

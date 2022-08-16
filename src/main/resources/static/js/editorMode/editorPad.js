@@ -102,6 +102,12 @@ editorPad.fontUnderlineButton    = editorPad.querySelector("font-underline")
 editorPad.alignTextLeftButton    = editorPad.querySelector("align-text-left")
 editorPad.alignTextCenterButton  = editorPad.querySelector("align-text-center")
 editorPad.alignTextRightButton   = editorPad.querySelector("align-text-right")
+editorPad.addRow                 = editorPad.querySelector("add-row")
+editorPad.addColumn              = editorPad.querySelector("add-column")
+editorPad.removeRow              = editorPad.querySelector("remove-row")
+editorPad.removeColumn           = editorPad.querySelector("remove-column")
+editorPad.addSheet               = editorPad.querySelector("add-sheet")
+editorPad.removeSheet            = editorPad.querySelector("remove-sheet")
 
 // EVERYTHING NEXT BELOW IS DEFINING SELECTION FUNCTIONS FOR THESE ELEMENTS
 

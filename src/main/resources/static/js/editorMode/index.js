@@ -1,5 +1,8 @@
-import {workbook} from "../workbook/index.js"
-import "./editorPad.js"
+import {editorPad} from "./editorPad.js"
+import "./web.js"
+import {httpClient} from "../web/httpClient.js"
 
-// Improving the workbook object by adding editor methods to it
-workbook
+
+editorPad.addSheet.addEventListener("click", ()=>{
+    httpClient.createSheet("shit")
+})

@@ -1,6 +1,7 @@
 import {addSortersToSheet} from "./sortingGear.js"
 import {addMatrixSelectorToSheet} from "./matrixSelector.js"
-import "./webSocket.js"
+import {httpClient} from "../web/httpClient.js"
+import "../web/webSocket.js"
 
 const // Usages
     sheetsPad = document.querySelector("sheets-pad"),
@@ -125,20 +126,17 @@ editorActivator.addEventListener("click", () => {
     if (document.body.classList.contains("editor-mode"))
         deactivate()
     else {
-        // Checking if the editor panel already exists
+        // Checking if the editor panel already has been loaded
         if (document.querySelector("editor-pad") !== null)
             activate()
-        else { // getting the editor panel
-            const ajax = new XMLHttpRequest()
-            ajax.open("GET", "editor", true)
-            ajax.send()
-            ajax.onerror=() => alert(ajax.responseText)
-            ajax.onload=() => {
-                // Authentication
-                if (ajax.status === 401) return
-                if (ajax.status === 204) import("../editorMode/index.js").then(() => activate())
-                else alert(ajax.responseText)
-            }
+        else {
+            httpClient.requestPermissionToEdit()
+                .then(permitted => {
+                    if(permitted)
+                        return import("../editorMode/index.js")
+                            .then(() => activate())
+                })
+                .catch(error => alert(error))
         }
     }
     function activate() {
