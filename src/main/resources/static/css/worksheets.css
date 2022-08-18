@@ -29,24 +29,24 @@ body {
     transition: 0.2s;
 }
 
-sheets-pad {
+sheets {
     grid-area: var(--sheet-pad-area);
 }
 
-sheets-pad .sheet {
+sheets .sheet {
     display: none;
 }
-sheets-pad .sheet.active {
+sheets .sheet.active {
     display: block;
     height: 100%;
     overflow: auto;
 }
 
-sheets-pad table {
+sheets table {
     border-spacing: 0;
 }
 
-sheets-pad td {
+sheets td {
     cursor: cell;
     padding: 5px;
     border-right: thin solid;
@@ -55,26 +55,26 @@ sheets-pad td {
     outline: 0 solid var(--theme-color);
     transition: 0.1s linear;
 }
-sheets-pad td.selected {
+sheets td.selected {
     z-index: 1;
     outline: 5px solid var(--theme-color);
 }
 
-sheets-pad td .content {
+sheets td .content {
     user-select: none;
 }
 
-sheets-pad .header{
+sheets .header{
     filter: drop-shadow(var(--shadow));
 }
-sheets-pad .header > td {
+sheets .header > td {
     padding: 5px 20px;
     position: sticky;
     top: 0;
     white-space: nowrap;
 }
 
-sheets-pad .header .sorter {
+sheets .header .sorter {
     opacity: 0.3;
     user-select: none;
     cursor: pointer;
@@ -82,17 +82,18 @@ sheets-pad .header .sorter {
     width: 0;
     transition: opacity 0.1s;
 }
-sheets-pad .header td:hover .sorter, sheets-pad .header td .sorter.sorted {
+sheets .header td:hover .sorter,
+sheets .header td .sorter.sorted {
     opacity: 1;
 }
-sheets-pad .header .sorter > img{
+sheets .header .sorter > img{
     padding: 2px;
     height: 15px;
     width: 15px;
     transform: translateX(-100%) translateY(-100%);
     transition: 0.1s;
 }
-sheets-pad .header .sorter.sorted > img {
+sheets .header .sorter.sorted > img {
     z-index: 10;
     background-color: white;
     outline: 2px solid var(--theme-color);
@@ -100,7 +101,7 @@ sheets-pad .header .sorter.sorted > img {
     transform: translateX(-100%) translateY(-20%);
 }
 
-sheets-pad clipboard td {
+sheets clipboard td {
     border: thin solid;
 }
 
@@ -162,7 +163,7 @@ tabs-pad .button:hover {
     border-radius: 3px;
     color: white;
 }
-/*  */
+
 tabs-pad .tab,
 tabs-pad .button {
     user-select: none;

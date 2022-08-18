@@ -1,4 +1,4 @@
-import {workbook} from "./index.js"
+import {workbook} from "../workbook.js"
 
 // Adds the cell selection mechanism like in Excel to sheet
 export function addMatrixSelectorToSheet(sheet){
@@ -35,14 +35,13 @@ export function addMatrixSelectorToSheet(sheet){
     }
     const matrix = sheet.selectionMatrix
 
-    sheet.addEventListener("mousedown", startSelection) // Selection will start by mouse button down
+    sheet.addEventListener("mousedown", startSelection)       // Selection will start by mouse button down
     window.addEventListener("mouseup", endSelection)     // And will end by button up in any zones of the window
     document.addEventListener("keydown", selectOnArrows) // Allows selecting via pressing the arrows
 
     function startSelection(event) {
-        const targetCell = workbook.getCellFromEvent(event)
-        if (!targetCell) return
-        updateSelection(targetCell, event)
+        if (!(event.target instanceof HTMLTableCellElement)) return
+        updateSelection(event.target, event)
         // When the mouse cursor moves over the cells, these cells are included in the matrix
         sheet.addEventListener("mousemove", selectCellsMatrix)
     }

@@ -13,10 +13,9 @@ export function addSortersToSheet(sheet){
             sorter.querySelector("img").src = `img/sort ${direction}.png` // must exists
         }
         sorter.applyDirection("a-z") // setting the default direction
-        sorter.addEventListener("click", () => sortRows())
         cell.append(sorter)
 
-        function sortRows() {
+        sorter.onclick=() => {
             // Reset other sorters
             for (const anySorter of sheet.querySelectorAll(".sorter")) {
                 if (anySorter !== sorter) {

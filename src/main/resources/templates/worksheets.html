@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/worksheets.css}"/>
-    <script type="module" th:src="@{/js/workbook/index.js}"></script>
+    <script type="module" th:src="@{/js/basis/basis.js}"></script>
     <title>XLSX-web</title>
 </head>
 <body>
-<sheets-pad>
+<sheets>
     <th:block th:each="sheet : ${workbook}">
         <!-- Each table will be placed into this scrollable container "sheet" that is independent of other sheets -->
         <div class="sheet"
@@ -29,7 +29,7 @@
         </div>
     </th:block>
     <clipboard></clipboard>
-</sheets-pad>
+</sheets>
 <tabs-pad>
     <div class="tabs">
         <th:block th:each="sheet : ${workbook}">
@@ -43,8 +43,7 @@
     <div class="buttons">
         <form class="button download"
               method="get"
-              action="#" th:action="@{/file}"
-              onclick="this.submit()">
+              action="#" th:action="@{/file}">
             <img th:src="@{img/excel.png}">
             Экспортировать
         </form>

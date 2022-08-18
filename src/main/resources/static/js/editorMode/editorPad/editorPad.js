@@ -1,6 +1,3 @@
-// A link to editor's css
-import {workbook} from "../workbook/index.js";
-
 document.head.insertAdjacentHTML("beforeend",
     `<link rel="stylesheet" href="css/worksheets-editor.css"/>`)
 
@@ -163,12 +160,3 @@ editorPad.setStyle=(style)=>{
     else if (style.textAlign === "center") editorPad.selectAlignCenter()
     else if (style.textAlign === "end")    editorPad.selectAlignRight()
 }
-
-// Adding the styles updater
-workbook.sheets.forEach(sheet => {
-    sheet.addEventListener(workbook.updateEvent.type, ()=>{
-        const cell = sheet.selectionMatrix.cellA
-        if (cell)
-            editorPad.setStyle(cell.style)
-    })
-})

@@ -14,17 +14,17 @@ import javax.websocket.server.ServerEndpoint
 open class WebSocket {
 
     @Bean
-    open fun configurer() = ServerEndpointExporter()
+    open fun conf() = ServerEndpointExporter()
 
     companion object {
         private val sessions = HashSet<Session>()
-        private val jsonMapper = ObjectMapper()
     }
 
     @OnOpen  fun addSession(ses: Session)    = sessions.add(ses)
     @OnClose fun removeSession(ses: Session) = sessions.remove(ses)
 
-    fun spreadObject(cmd: Any) = sessions.forEach {
-        it.basicRemote.sendText(jsonMapper.writeValueAsString(cmd))
+    fun spreadObject(obj: Any) {
+        val json = ObjectMapper().writeValueAsString(obj)
+        sessions.forEach { it.basicRemote.sendText(json) }
     }
 }
