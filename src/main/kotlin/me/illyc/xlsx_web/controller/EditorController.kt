@@ -1,66 +1,54 @@
 package me.illyc.xlsx_web.controller
 
+import me.illyc.xlsx_web.entity.CellLocation
+import me.illyc.xlsx_web.entity.ColumnLocation
+import me.illyc.xlsx_web.entity.RowLocation
+import me.illyc.xlsx_web.entity.SheetLocation
 import me.illyc.xlsx_web.service.EditorService
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
 @Controller
 @RequestMapping("/editor")
+@ResponseStatus(value = HttpStatus.OK)
 class EditorController(private val service: EditorService) {
 
     // Returns 401 if the client is not allowed to edit the document
     @GetMapping
-    fun requestPermission() = ResponseEntity<Nothing>(HttpStatus.NO_CONTENT)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT) fun requestPermission() {}
 
     // SHEETS LEVEL
+
     @PostMapping("/sheets/{sheetName}")
-    fun createSheet(@PathVariable location: Map<String, String>) = executeOrder("createSheet", location)
+    fun createSheet(loc: SheetLocation) = service.createSheet(loc)
+
     @DeleteMapping("/sheets/{sheetName}")
-    fun deleteSheet(@PathVariable location: Map<String, String>) = executeOrder("deleteSheet", location)
+    fun deleteSheet(loc: SheetLocation) = service.deleteSheet(loc)
+
     @PatchMapping("/sheets/{sheetName}")
-    fun renameSheet(@PathVariable location: Map<String, String>,
-                    @RequestParam patch: Map<String, String>) = executeOrder("renameSheet", location, patch)
+    fun renameSheet(loc: SheetLocation, @RequestBody newName: String) = service.renameSheet(newName, loc)
 
     // ROWS-COLUMNS LEVEL
+
     @PostMapping("/sheets/{sheetName}/rows/{rowIndex}")
-    fun createRow(@PathVariable location: Map<String, String>) = executeOrder("createRow", location)
+    fun createRow(loc: RowLocation) = service.createRow(loc)
+
     @DeleteMapping("/sheets/{sheetName}/rows/{rowIndex}")
-    fun deleteRow(@PathVariable location: Map<String, String>) = executeOrder("deleteRow", location)
+    fun deleteRow(loc: RowLocation) = service.deleteRow(loc)
 
     @PostMapping("/sheets/{sheetName}/columns/{cellIndex}")
-    fun createColumn(@PathVariable location: Map<String, String>) = executeOrder("createColumn", location)
+    fun createColumn(loc: ColumnLocation) = service.createColumn(loc)
+
     @DeleteMapping("/sheets/{sheetName}/columns/{cellIndex}")
-    fun deleteColumn(@PathVariable location: Map<String, String>) = executeOrder("deleteColumn", location)
+    fun deleteColumn(loc: ColumnLocation) = service.deleteColumn(loc)
 
     // CELLS LEVEL
-    @PatchMapping("/sheets/{sheetName}/{rowIndex}/{cellIndex}")
-    fun patchCell(@PathVariable location: Map<String, String>,
-                  @RequestParam patch: Map<String, String>) = executeOrder("patchCell", location, patch)
 
-    // Assembles an order for editing and transfer it to the service,
-    // then returns ResponseEntity corresponding to the result of the service process
-    private fun executeOrder(type: String, vararg maps: Map<String, String>): ResponseEntity<String> {
+    @PatchMapping("/sheets/{sheetName}/rows/{rowIndex}/cells/{cellIndex}")
+    fun setText(loc: CellLocation, @RequestBody text: String) = service.setText(text, loc)
 
-        val sheetName = maps[0]["sheetName"]
-        val rowIndex = maps[0]["rowIndex"]
-        val cellIndex = maps[0]["cellIndex"]
-        val patch = if (maps.size >= 2) maps[1] else null
-
-        return if (when (type) {
-                "createSheet"  -> service.createSheet(sheetName!!)
-                "deleteSheet"  -> service.deleteSheet(sheetName!!)
-                "renameSheet"  -> service.renameSheet(sheetName!!, patch!!["newName"]!!)
-                "createRow"    -> service.createRow(sheetName!!, rowIndex!!)
-                "deleteRow"    -> service.deleteRow(sheetName!!, rowIndex!!)
-                "createColumn" -> service.createColumn(sheetName!!, cellIndex!!)
-                "deleteColumn" -> service.deleteColumn(sheetName!!, cellIndex!!)
-                "patchCell"    -> service.patchCell(sheetName!!, rowIndex!!, cellIndex!!, patch!!)
-                else -> false
-            })
-            ResponseEntity<String>(HttpStatus.OK)
-        else
-            ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR)
-    }
+    @PatchMapping("/groupOfCells/{locations}")
+    fun setStyle(@PathVariable locations: Set<CellLocation>,
+                 @RequestBody style: String) = service.setStyle(style, locations)
 }

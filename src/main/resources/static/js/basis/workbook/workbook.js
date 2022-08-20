@@ -2,8 +2,7 @@ import {addSortersToSheet} from "./interactors/sorting.js"
 import {addMatrixSelectorToSheet} from "./interactors/matrixSelector.js"
 import {tabsPad} from "../tabsPad/tabsPad.js"
 
-const sheetsEl = document.querySelector("sheets")
-
+export const sheetsEl = document.querySelector("sheets")
 export const workbook = {
     updateEvent : new Event("update"),
 
@@ -11,13 +10,18 @@ export const workbook = {
     get activeSheet(){ return sheetsEl.querySelector(".sheet.active")},
 
     set activeSheet(sheet){
-        this.activeSheet?.classList.remove("active")
+        const oldActiveSheet = this.activeSheet
+        if (oldActiveSheet){
+            oldActiveSheet.classList.remove("active")
+            oldActiveSheet.matrixSelector.enabled = false
+        }
         sheet.classList.add("active")
+        sheet.matrixSelector.enabled = true
         // Selecting the corresponding tab
         tabsPad.activeTab?.classList.remove("active")
         tabsPad.getTabByName(sheet.name).classList.add("active")
 
-        sheet.dispatchEvent(this.updateEvent)
+        document.dispatchEvent(this.updateEvent)
     },
     getSheetByName(sheetName){
         return sheetsEl.querySelector(`.sheet[name="${sheetName}"]`)
@@ -91,9 +95,7 @@ export const workbook = {
             row.defineCell=(cell) => {
                 Object.defineProperties(cell, {
                     rowIndex : {get(){ return row.rowIndex }},
-                    value    : {
-                        get(){ return cell.querySelector(".content").textContent },
-                        set(text){ cell.value = text }}
+                    content  : {get(){ return cell.querySelector(".content")}}
                 })
             }
             for (const cell of row.cells) row.defineCell(cell)

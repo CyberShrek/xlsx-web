@@ -1,84 +1,82 @@
 package me.illyc.xlsx_web.service
 import me.illyc.xlsx_web.controller.WebSocket
+import me.illyc.xlsx_web.entity.CellLocation
+import me.illyc.xlsx_web.entity.ColumnLocation
+import me.illyc.xlsx_web.entity.RowLocation
+import me.illyc.xlsx_web.entity.SheetLocation
 import org.springframework.stereotype.Service
 
 @Service
 class EditorService(private val webSocket: WebSocket) {
 
-    fun createSheet(sheetName: String) : Boolean {
+    fun createSheet(loc: SheetLocation) {
 
         webSocket.spreadObject(object {
-            val type = "createSheet"
-            val sheetName = sheetName
+            val order = "createSheet"
+            val location = loc
         })
-        return true
     }
 
-    fun deleteSheet(sheetName: String): Boolean {
-
+    fun deleteSheet(loc: SheetLocation) {
         webSocket.spreadObject(object {
-            val type = "deleteSheet"
-            val sheetName = sheetName
+            val order = "deleteSheet"
+            val location = loc
         })
-        return true
     }
 
-    fun renameSheet(sheetName: String, newName: String): Boolean {
+    fun renameSheet(newName: String, loc: SheetLocation) {
 
         webSocket.spreadObject(object {
-            val type = "renameSheet"
-            val sheetName = sheetName
+            val order = "renameSheet"
             val newName = newName
+            val location = loc
         })
-        return true
     }
 
-    fun createRow(sheetName: String, rowIndex: String): Boolean {
+    fun createRow(loc: RowLocation) {
 
         webSocket.spreadObject(object {
-            val type = "createRow"
-            val sheetName = sheetName
-            val rowIndex = rowIndex
+            val order = "createRow"
+            val location = loc
         })
-        return true
     }
 
-    fun deleteRow(sheetName: String, rowIndex: String): Boolean {
+    fun deleteRow(loc: RowLocation) {
+
         webSocket.spreadObject(object {
-            val type = "deleteRow"
-            val sheetName = sheetName
-            val rowIndex = rowIndex
+            val order = "deleteRow"
+            val location = loc
         })
-        return true
     }
 
-    fun createColumn(sheetName: String, cellIndex: String): Boolean {
+    fun createColumn(loc: ColumnLocation) {
         webSocket.spreadObject(object {
-            val type = "createColumn"
-            val sheetName = sheetName
-            val cellIndex = cellIndex
+            val order = "createColumn"
+            val location = loc
         })
-        return true
     }
 
-    fun deleteColumn(sheetName: String, cellIndex: String): Boolean {
+    fun deleteColumn(loc: ColumnLocation) {
         webSocket.spreadObject(object {
-            val type = "deleteColumn"
-            val sheetName = sheetName
-            val cellIndex = cellIndex
+            val order = "deleteColumn"
+            val location = loc
         })
-        return true
     }
 
-    fun patchCell(sheetName: String, rowIndex: String, cellIndex: String, patch: Map<String, String>): Boolean {
+    fun setText(text: String, loc: CellLocation) {
+        webSocket.spreadObject(object {
+            val order = "setText"
+            val text = text
+            val location = loc
+        })
+    }
+
+    fun setStyle(style: String, locs: Set<CellLocation>) {
 
         webSocket.spreadObject(object {
-            val type = "patchCell"
-            val sheetName = sheetName
-            val rowIndex = rowIndex
-            val cellIndex = cellIndex
-            val patch = patch
+            val order = "setStyle"
+            val style = style
+            val locations = locs
         })
-        return true
     }
 }

@@ -33,7 +33,7 @@ tabsPad.editorActivator.onclick=() => {
     function activate() {
         document.body.classList.add("editor-mode")
         tabsPad.editorActivator.classList.add("active")
-        workbook.activeSheet.dispatchEvent(workbook.updateEvent)
+        document.dispatchEvent(workbook.updateEvent)
     }
     function deactivate() {
         document.body.classList.remove("editor-mode")

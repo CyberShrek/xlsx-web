@@ -3,8 +3,14 @@ import {workbook} from "../workbook.js"
 // Adds the cell selection mechanism like in Excel to sheet
 export function addMatrixSelectorToSheet(sheet){
     // The matrix of selected cells
-    sheet.selectionMatrix = {
+    sheet.matrixSelector = {
         cells: [],
+        // Cells between whose matrix of cells will be selected
+        cellA: undefined,
+        cellB: undefined,
+        // Gives access to the matrix selection control
+        enabled: false,
+
         addCell(cell){
             cell.classList.add("selected")
             this.cells.push(cell)
@@ -16,32 +22,26 @@ export function addMatrixSelectorToSheet(sheet){
             this.cells.forEach(cell => this.removeCell(cell))
             this.cells = []
         },
-        // Cells between whose matrix of cells will be selected
-        cellA: undefined,
-        cellB: undefined,
         // Matrix coordinates
         get topId(){
-            return (this.cellA.rowIndex <= this.cellB.rowIndex) ? this.cellA.rowIndex : this.cellB.rowIndex
-        },
+            return (this.cellA.rowIndex <= this.cellB.rowIndex) ? this.cellA.rowIndex : this.cellB.rowIndex },
         get bottomId(){
-            return (this.cellA.rowIndex <= this.cellB.rowIndex) ? this.cellB.rowIndex : this.cellA.rowIndex
-        },
+            return (this.cellA.rowIndex <= this.cellB.rowIndex) ? this.cellB.rowIndex : this.cellA.rowIndex },
         get leftId(){
-            return (this.cellA.cellIndex <= this.cellB.cellIndex) ? this.cellA.cellIndex : this.cellB.cellIndex
-        },
+            return (this.cellA.cellIndex <= this.cellB.cellIndex) ? this.cellA.cellIndex : this.cellB.cellIndex },
         get rightId(){
-            return (this.cellA.cellIndex <= this.cellB.cellIndex) ? this.cellB.cellIndex : this.cellA.cellIndex
-        },
+            return (this.cellA.cellIndex <= this.cellB.cellIndex) ? this.cellB.cellIndex : this.cellA.cellIndex },
     }
-    const matrix = sheet.selectionMatrix
+    const matrix = sheet.matrixSelector
 
     sheet.addEventListener("mousedown", startSelection)       // Selection will start by mouse button down
     window.addEventListener("mouseup", endSelection)     // And will end by button up in any zones of the window
     document.addEventListener("keydown", selectOnArrows) // Allows selecting via pressing the arrows
 
     function startSelection(event) {
-        if (!(event.target instanceof HTMLTableCellElement)) return
-        updateSelection(event.target, event)
+        const targetCell = event.target.closest("td")
+        if (targetCell === null) return
+        updateSelection(targetCell, event)
         // When the mouse cursor moves over the cells, these cells are included in the matrix
         sheet.addEventListener("mousemove", selectCellsMatrix)
     }
@@ -51,11 +51,9 @@ export function addMatrixSelectorToSheet(sheet){
 
     // Moves the selector after the last selected cell according to the pressed arrow
     function selectOnArrows(event) {
-        if (!sheet.classList.contains("active") ||
-            // Arrows key codes
-            event.keyCode < 37 || event.keyCode > 40) { return }
-
-        event.preventDefault() // Prevent standard arrows scrolling
+        if (!matrix.enabled || event.keyCode < 37 || event.keyCode > 40) return
+        // Prevent arrow scrolling
+        event.preventDefault()
 
         let targetCell
         try { switch (event.keyCode) {
@@ -85,7 +83,7 @@ export function addMatrixSelectorToSheet(sheet){
         if (!event.shiftKey) {
             matrix.cellA = cell
             // Sending the report that a new matrix has been selected
-            sheet.dispatchEvent(workbook.updateEvent)
+            document.dispatchEvent(workbook.updateEvent)
         }
         matrix.cellB = cell
         selectCellsMatrix()
@@ -93,10 +91,11 @@ export function addMatrixSelectorToSheet(sheet){
 
     // Crucial function here
     function selectCellsMatrix(event) {
-        if (event != null) {
-            if (!(event.target instanceof HTMLTableCellElement) || event.target === matrix.cellB)
+        if (event) {
+            const targetCell = event.target.closest("td")
+            if (targetCell === null || targetCell === matrix.cellB)
                 return
-            matrix.cellB = event.target
+            matrix.cellB = targetCell
         }
         // Removing selects that remained after the previous matrix filling
         matrix.clear()
@@ -113,7 +112,9 @@ export function addMatrixSelectorToSheet(sheet){
 document.addEventListener("copy", () => {
     // Each time before copying will be created new table, filled with selected cells,
     // and pushed into Selection as a single Range. This table will be placed in the <clipboard> element
-    const matrix = workbook.activeSheet.selectionMatrix
+    const matrix = workbook.activeSheet.matrixSelector
+    if (!matrix.enabled) return
+
     const copyingTable = document.createElement("table")
     let copyingRow = document.createElement("tr"),
         lastRowIndex = matrix.cells[0].rowIndex
@@ -125,7 +126,7 @@ document.addEventListener("copy", () => {
             lastRowIndex = cell.rowIndex
         }
         const copyingCell = cell.cloneNode(true)
-        copyingCell.textContent = cell.textContent
+        copyingCell.textContent = cell.content.textContent
         copyingCell.classList.remove("selected")
         copyingRow.append(copyingCell)
     })
