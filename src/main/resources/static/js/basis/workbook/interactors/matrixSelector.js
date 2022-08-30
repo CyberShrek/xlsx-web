@@ -6,8 +6,8 @@ export function addMatrixSelectorToSheet(sheet){
     sheet.matrixSelector = {
         cells: [],
         // Cells between whose matrix of cells will be selected
-        cellA: undefined,
-        cellB: undefined,
+        cellA: sheet.rows[0].cells[0],
+        cellB: sheet.rows[0].cells[0],
         // Gives access to the matrix selection control
         enabled: false,
 
@@ -106,6 +106,7 @@ export function addMatrixSelectorToSheet(sheet){
             }
         }
     }
+    selectCellsMatrix()
 }
 
 // This allows to copy selected cells

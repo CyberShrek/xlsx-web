@@ -27,7 +27,8 @@ class EditorController(private val service: EditorService) {
     fun deleteSheet(loc: SheetLocation) = service.deleteSheet(loc)
 
     @PatchMapping("/sheets/{sheetName}")
-    fun renameSheet(loc: SheetLocation, @RequestBody newName: String) = service.renameSheet(newName, loc)
+    fun renameSheet(loc: SheetLocation,
+                    @RequestBody newName: String) = service.renameSheet(newName, loc)
 
     // ROWS-COLUMNS LEVEL
 
@@ -46,9 +47,10 @@ class EditorController(private val service: EditorService) {
     // CELLS LEVEL
 
     @PatchMapping("/sheets/{sheetName}/rows/{rowIndex}/cells/{cellIndex}")
-    fun setText(loc: CellLocation, @RequestBody text: String) = service.setText(text, loc)
+    fun patchText(loc: CellLocation,
+                  @RequestBody text: String) = service.patchText(text.removeSurrounding("\"","\""), loc)
 
     @PatchMapping("/groupOfCells/{locations}")
-    fun setStyle(@PathVariable locations: Set<CellLocation>,
-                 @RequestBody style: String) = service.setStyle(style, locations)
+    fun patchStyle(@PathVariable locations: Set<CellLocation>,
+                   @RequestBody style: String) = service.patchStyle(style, locations)
 }

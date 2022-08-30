@@ -6,7 +6,7 @@ httpClient.createSheet=(sheetName) =>
         method: "POST"
     }).then(response => handleResponse(response))
 
-httpClient.removeSheet=(sheetName) =>
+httpClient.deleteSheet=(sheetName) =>
     fetch(`editor/sheets/${sheetName}`, {
         method: "DELETE"
     }).then(response => handleResponse(response))
@@ -39,14 +39,15 @@ httpClient.deleteColumn=(sheetName, cellIndex) =>
     }).then(response => handleResponse(response))
 
 // CELLS LEVEL
-httpClient.setCellText=(sheetName, rowIndex, cellIndex, text) =>
+httpClient.patchCellText=(sheetName, rowIndex, cellIndex, text) =>
     fetch(`editor/sheets/${sheetName}/rows/${rowIndex}/cells/${cellIndex}`, {
         method: "PATCH",
-        body: text ? text : " "
+        body: `"${text}"`
     }).then(response => handleResponse(response))
 
-// httpClient.setStyle=() =>
-
+httpClient.patchStyle=(cells, styleName, action) => {
+    const cellModels = []
+}
 
 function handleResponse(response) {
     if (!response.ok) throw new Error(response.status)

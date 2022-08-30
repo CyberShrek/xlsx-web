@@ -11,8 +11,7 @@ sheetsEl.ondblclick=(event) => {
     const content = cell.content
     const oldText = content.textContent
 
-    content.style.cursor     = "text"
-    content.style.userSelect = "text"
+    cell.classList.add("editor-mode")
     content.contentEditable      = true
     sheet.matrixSelector.enabled = false
     content.focus()
@@ -20,9 +19,7 @@ sheetsEl.ondblclick=(event) => {
     content.addEventListener("blur", appendChanges, {once: true})
 
     function appendChanges() {
-        content.height           = ""
-        content.style.cursor     = ""
-        content.style.userSelect = ""
+        cell.classList.remove("editor-mode")
         content.contentEditable      = false
         sheet.matrixSelector.enabled = true
 

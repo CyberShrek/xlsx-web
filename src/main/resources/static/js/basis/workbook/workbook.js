@@ -8,7 +8,6 @@ export const workbook = {
 
     get sheets()     { return sheetsEl.querySelectorAll(".sheet") },
     get activeSheet(){ return sheetsEl.querySelector(".sheet.active")},
-
     set activeSheet(sheet){
         const oldActiveSheet = this.activeSheet
         if (oldActiveSheet){
@@ -48,7 +47,7 @@ export const workbook = {
         this.defineSheet(sheet)
         return sheet
     },
-    removeSheet(sheetName){
+    deleteSheet(sheetName){
         this.getSheetByName(sheetName).remove()
     },
     // The sheet-row-cell methods take elements and define new methods and fields
@@ -80,26 +79,31 @@ export const workbook = {
             }
             return column
         }
-        sheet.removeRow=(rowIndex) => sheet.rows[rowIndex].remove()
-        sheet.removeColumn=(columnIndex) => {
+        sheet.deleteRow=(rowIndex) => sheet.rows[rowIndex].remove()
+        sheet.deleteColumn=(columnIndex) => {
             for (const row of sheet.rows) {
                 row.cells[columnIndex].remove()
             }
         }
-
-        addSortersToSheet(sheet)
-        addMatrixSelectorToSheet(sheet)
-
         sheet.defineRow=(row) => {
-
             row.defineCell=(cell) => {
                 Object.defineProperties(cell, {
                     rowIndex : {get(){ return row.rowIndex }},
                     content  : {get(){ return cell.querySelector(".content")}}
                 })
+                cell.setFontSize=(fontSize)     => cell.style.fontSize = fontSize
+                cell.setBackground=(background) => cell.style.background = background
+                cell.setTextAlign=(textAlign)   => cell.style.textAlign = textAlign
+
+                cell.setBold=(set)      => cell.style.fontWeight = (set) ? 'bold' : 'normal'
+                cell.setItalic=(set)    => cell.style.fontStyle = (set) ? 'italic' : 'normal'
+                cell.setUnderline=(set) => cell.style.textDecoration = (set) ? 'underline' : 'none'
             }
             for (const cell of row.cells) row.defineCell(cell)
         }
         for (const row of sheet.rows) sheet.defineRow(row)
+
+        addSortersToSheet(sheet)
+        addMatrixSelectorToSheet(sheet)
     }
 }
