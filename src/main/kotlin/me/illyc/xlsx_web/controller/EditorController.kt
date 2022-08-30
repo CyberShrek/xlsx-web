@@ -50,7 +50,8 @@ class EditorController(private val service: EditorService) {
     fun patchText(loc: CellLocation,
                   @RequestBody text: String) = service.patchText(text.removeSurrounding("\"","\""), loc)
 
-    @PatchMapping("/groupOfCells/{locations}")
-    fun patchStyle(@PathVariable locations: Set<CellLocation>,
-                   @RequestBody style: String) = service.patchStyle(style, locations)
+    @PatchMapping("/styles/{styleName}")
+    fun patchStyle(@PathVariable styleName: String,
+                   @RequestParam value: String,
+                   @RequestBody locations: Set<CellLocation>) = service.patchStyle(styleName, value, locations)
 }

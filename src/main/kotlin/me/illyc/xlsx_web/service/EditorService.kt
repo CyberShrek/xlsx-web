@@ -71,10 +71,11 @@ class EditorService(private val webSocket: WebSocket) {
         })
     }
 
-    fun patchStyle(style: String, locs: Set<CellLocation>) {
+    fun patchStyle(style: String, value: String, locs: Set<CellLocation>) {
         webSocket.spreadObject(object {
             val order = "patchStyle"
             val style = style
+            val value = value
             val locations = locs
         })
     }

@@ -45,9 +45,15 @@ httpClient.patchCellText=(sheetName, rowIndex, cellIndex, text) =>
         body: `"${text}"`
     }).then(response => handleResponse(response))
 
-httpClient.patchStyle=(cells, styleName, action) => {
-    const cellModels = []
-}
+httpClient.patchStyle=(styleName, value, locations) =>
+    fetch(`editor/styles/${styleName}?value=${value}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(locations)
+    }).then(response => handleResponse(response))
+
 
 function handleResponse(response) {
     if (!response.ok) throw new Error(response.status)

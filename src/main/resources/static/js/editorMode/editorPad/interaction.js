@@ -22,6 +22,7 @@ editorPad.createSheetButton.onclick=() => {
         return sheetName
     }
 }
+
 editorPad.deleteSheetButton.onclick=() => {
     const sheetName = workbook.activeSheet.name
     if (confirm("Вы действительно хотите удалить лист " + sheetName + "?"))
@@ -116,16 +117,23 @@ function setAlign(align){ setStyle("textAlign", align) }
 editorPad.fontBoldButton.onclick=(event)      => setFontStyle(event, "fontBold")
 editorPad.fontItalicButton.onclick=(event)    => setFontStyle(event, "fontItalic")
 editorPad.fontUnderlineButton.onclick=(event) => setFontStyle(event, "fontUnderline")
-function setFontStyle(event, styleName) { setStyle(styleName, !event.classList.contains("active")) }
+function setFontStyle(event, styleName) { setStyle(styleName, !event.target.classList.contains("active")) }
 
-editorPad.fontSizePalette.onmouseenter=() => {}
+editorPad.fontSizePalette.querySelectorAll("value").forEach(paletteValue =>
+    paletteValue.onclick=() => setStyle("fontSize", paletteValue.textContent))
 
-editorPad.backgroundColorPalette.onmouseenter=() => {}
+editorPad.backgroundColorPalette.querySelectorAll("value").forEach(paletteValue =>
+    paletteValue.onclick=() => setStyle("backgroundColor", paletteValue.style.backgroundColor))
 
 function toggleElements(className, elements) {
     for (const element of elements)
         element.classList.toggle(className)
 }
-function setStyle(styleName, action) {
-    httpClient.patchStyle(workbook.activeSheet.matrixSelector.cells, styleName, action)
+
+function setStyle(styleName, value) {
+    const locations = []
+    workbook.activeSheet.matrixSelector.cells.forEach(cell => locations.push(cell.location))
+
+    httpClient.patchStyle(styleName, value, locations)
+        .catch(e => alert(e))
 }

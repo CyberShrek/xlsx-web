@@ -89,15 +89,21 @@ export const workbook = {
             row.defineCell=(cell) => {
                 Object.defineProperties(cell, {
                     rowIndex : {get(){ return row.rowIndex }},
-                    content  : {get(){ return cell.querySelector(".content")}}
+                    content  : {get(){ return cell.querySelector(".content")}},
+                    location : {get(){ return {
+                            sheetName: sheet.name,
+                            rowIndex: cell.rowIndex,
+                            cellIndex: cell.cellIndex
+                        }
+                    }}
                 })
                 cell.setFontSize=(fontSize)     => cell.style.fontSize = fontSize
-                cell.setBackground=(background) => cell.style.background = background
                 cell.setTextAlign=(textAlign)   => cell.style.textAlign = textAlign
+                cell.setBackground=(background) => cell.style.background = background
 
-                cell.setBold=(set)      => cell.style.fontWeight = (set) ? 'bold' : 'normal'
-                cell.setItalic=(set)    => cell.style.fontStyle = (set) ? 'italic' : 'normal'
-                cell.setUnderline=(set) => cell.style.textDecoration = (set) ? 'underline' : 'none'
+                cell.setBold=(set)      => cell.style.fontWeight = (set) ? "bold" : "normal"
+                cell.setItalic=(set)    => cell.style.fontStyle = (set) ? "italic" : "normal"
+                cell.setUnderline=(set) => cell.style.textDecoration = (set) ? "underline" : "none"
             }
             for (const cell of row.cells) row.defineCell(cell)
         }
