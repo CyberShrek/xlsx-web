@@ -7,7 +7,7 @@ sheetsEl.ondblclick=(event) => {
     const cell = event.target.closest("td")
     if (cell === null) return
 
-    const sheet   = cell.closest(".sheet")
+    const sheet   = cell.row.sheet
     const content = cell.content
     const oldText = content.textContent
 
@@ -24,7 +24,7 @@ sheetsEl.ondblclick=(event) => {
         sheet.matrixSelector.enabled = true
 
         if (content.textContent !== oldText)
-            httpClient.setCellText(sheet.name, cell.rowIndex, cell.cellIndex, content.textContent)
+            httpClient.patchCellText(cell.location, content.textContent)
                 .catch(e => {
                     content.textContent = oldText
                     alert(e)

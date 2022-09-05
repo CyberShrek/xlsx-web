@@ -20,7 +20,7 @@ open class Security {
     @Bean
     open fun filterChain(http: HttpSecurity) = http
         .authorizeRequests()
-        .antMatchers("/editor/**").hasRole("ADMIN")
+        .antMatchers("/workbook/**").hasRole("ADMIN")
         .anyRequest().permitAll()
         .and().httpBasic()
         .and().csrf().disable()

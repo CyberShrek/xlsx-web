@@ -62,6 +62,7 @@ sheets td.selected {
 
 sheets td .content {
     user-select: none;
+    white-space: pre-wrap;
 }
 
 sheets .header{
@@ -72,6 +73,9 @@ sheets .header > td {
     position: sticky;
     top: 0;
     white-space: nowrap;
+}
+sheets .header > td .content {
+    white-space: pre;
 }
 
 sheets .header .sorter {
@@ -127,7 +131,7 @@ tabs-pad .tabs {
 
 tabs-pad .tab {
     flex-shrink: 0;
-    white-space: nowrap;
+    white-space: pre;
     border-left: var(--border);
 }
 tabs-pad .tab:hover {

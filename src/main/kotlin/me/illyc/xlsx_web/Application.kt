@@ -7,7 +7,7 @@ import org.springframework.boot.runApplication
 open class Application
 
 // A simple web application that allows users to read, edit and export .xlsx files
-// (think of this as a primitive implementation of Excel)
+// (primitive implementation of Excel)
 fun main() {
     runApplication<Application>()
     println("Running")

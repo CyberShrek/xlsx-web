@@ -34,7 +34,7 @@ export const workbook = {
             "afterbegin", `
             <table>
                 <tr class="header">
-                    <td> <div class="content"></div> </td>
+                    <td> <div class="content"></div></td>
                 </tr>
             </table>`
         )
@@ -42,18 +42,27 @@ export const workbook = {
         // Corresponding tab creation
         const tab = document.createElement("div")
         tab.classList.add("tab")
+        tab.setAttribute("name", sheetName)
         tab.textContent = sheetName
         tabsPad.tadsSection.append(tab)
         this.defineSheet(sheet)
-        return sheet
+        workbook.activeSheet = sheet
     },
     deleteSheet(sheetName){
         this.getSheetByName(sheetName).remove()
+        tabsPad.getTabByName(sheetName).remove()
     },
     // The sheet-row-cell methods take elements and define new methods and fields
     defineSheet(sheet) {
         Object.defineProperties(sheet, {
-            name : {get(){ return sheet.getAttribute("name") }},
+            name : {
+                get(){ return sheet.getAttribute("name") },
+                set(v){
+                    const correspondingTab = tabsPad.getTabByName(sheet.name)
+                    correspondingTab.setAttribute("name", v)
+                    correspondingTab.textContent = correspondingTab.getAttribute("name")
+                    sheet.setAttribute("name", v)
+                }},
             table: {get(){ return sheet.querySelector("table") }},
             rows : {get(){ return sheet.table.rows }}
         })
@@ -61,23 +70,18 @@ export const workbook = {
         sheet.createRow=(rowIndex) => {
             const row = document.createElement("tr")
             for (let i = 0; i < sheet.rows[0].cells.length-1; i++) {
-                row.insertAdjacentHTML("beforeend",
-                    `<td> <div class="content"></div> </td>`)
+                row.insertAdjacentHTML("afterbegin", `<td> <div class="content"></div> </td>`)
             }
-            sheet.table.insertBefore(row, sheet.rows[rowIndex])
+            sheet.rows[0].parentNode.insertBefore(row, sheet.rows[rowIndex + 1])
             sheet.defineRow(row)
-            return row
         }
         sheet.createColumn=(columnIndex) => {
-            const column = []
             for (const row of sheet.rows) {
                 const cell = document.createElement("td")
                 cell.insertAdjacentHTML("afterbegin", `<div class="content"></div>`)
-                row.insertBefore(cell, row[columnIndex])
+                row.insertBefore(cell, row.cells[columnIndex + 1])
                 row.defineCell(cell)
-                column.push(cell)
             }
-            return column
         }
         sheet.deleteRow=(rowIndex) => sheet.rows[rowIndex].remove()
         sheet.deleteColumn=(columnIndex) => {
@@ -86,13 +90,25 @@ export const workbook = {
             }
         }
         sheet.defineRow=(row) => {
+            Object.defineProperties(row, {
+                sheet: {get(){ return sheet }},
+                location: {get() {
+                    return {
+                        sheetName: sheet.name,
+                        rowIndex: row.rowIndex
+                    }
+                }}
+            })
+
             row.defineCell=(cell) => {
                 Object.defineProperties(cell, {
+                    row      : {get(){ return row }},
                     rowIndex : {get(){ return row.rowIndex }},
                     content  : {get(){ return cell.querySelector(".content")}},
-                    location : {get(){ return {
+                    location : {get(){
+                        return {
                             sheetName: sheet.name,
-                            rowIndex: cell.rowIndex,
+                            rowIndex: row.rowIndex,
                             cellIndex: cell.cellIndex
                         }
                     }}

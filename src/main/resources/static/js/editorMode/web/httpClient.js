@@ -2,58 +2,59 @@ import {httpClient} from "../../basis/web/httpClient.js"
 
 // SHEETS LEVEL
 httpClient.createSheet=(sheetName) =>
-    fetch(`editor/sheets/${sheetName}`, {
+    fetch(`workbook/sheets/${sheetName}`, {
         method: "POST"
     }).then(response => handleResponse(response))
 
 httpClient.deleteSheet=(sheetName) =>
-    fetch(`editor/sheets/${sheetName}`, {
+    fetch(`workbook/sheets/${sheetName}`, {
         method: "DELETE"
     }).then(response => handleResponse(response))
 
 httpClient.renameSheet=(sheetName, newName) =>
-    fetch(`editor/sheets/${sheetName}`, {
+    fetch(`workbook/sheets/${sheetName}`, {
         method: "PATCH",
         body: newName
     }).then(response => handleResponse(response))
 
 // ROWS AND COLUMNS LEVEL
-httpClient.createRow=(sheetName, rowIndex) =>
-    fetch(`editor/sheets/${sheetName}/rows/${rowIndex}`, {
+httpClient.createRow=(rowLocation) =>
+    fetch(`workbook/sheets/${rowLocation.sheetName}/rows/${rowLocation.rowIndex}`, {
         method: "POST"
     }).then(response => handleResponse(response))
 
-httpClient.deleteRow=(sheetName, rowIndex) =>
-    fetch(`editor/sheets/${sheetName}/rows/${rowIndex}`, {
+httpClient.deleteRow=(rowLocation) =>
+    fetch(`workbook/sheets/${rowLocation.sheetName}/rows/${rowLocation.rowIndex}`, {
         method: "DELETE"
     }).then(response => handleResponse(response))
 
-httpClient.createColumn=(sheetName, cellIndex) =>
-    fetch(`editor/sheets/${sheetName}/columns/${cellIndex}`, {
+httpClient.createColumn=(cellLocation) =>
+    fetch(`workbook/sheets/${cellLocation.sheetName}/columns/${cellLocation.cellIndex}`, {
         method: "POST"
     }).then(response => handleResponse(response))
 
-httpClient.deleteColumn=(sheetName, cellIndex) =>
-    fetch(`editor/sheets/${sheetName}/columns/${cellIndex}`, {
+httpClient.deleteColumn=(cellLocation) =>
+    fetch(`workbook/sheets/${cellLocation.sheetName}/columns/${cellLocation.cellIndex}`, {
         method: "DELETE"
     }).then(response => handleResponse(response))
 
 // CELLS LEVEL
-httpClient.patchCellText=(sheetName, rowIndex, cellIndex, text) =>
-    fetch(`editor/sheets/${sheetName}/rows/${rowIndex}/cells/${cellIndex}`, {
+httpClient.patchCellText=(cellLocation, text) =>
+    fetch(
+        `workbook/sheets/${cellLocation.sheetName}/rows/${cellLocation.rowIndex}/cells/${cellLocation.cellIndex}`, {
         method: "PATCH",
         body: `"${text}"`
     }).then(response => handleResponse(response))
 
-httpClient.patchStyle=(styleName, value, locations) =>
-    fetch(`editor/styles/${styleName}?value=${value}`, {
+httpClient.patchStyle=(style, value, locations) => {
+    fetch(`workbook/styles/${style}?value=${value}`, {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify(locations)
     }).then(response => handleResponse(response))
-
+}
 
 function handleResponse(response) {
     if (!response.ok) throw new Error(response.status)

@@ -7,10 +7,10 @@ sheets td.editor-mode .content {
     cursor: text;
     user-select: text
 }
-sheets td.showing-create-row    {border-bottom: 15px solid var(--theme-color)}
-sheets td.showing-create-column {border-right:  15px solid var(--theme-color)}
-sheets td.showing-delete-row    {outline: 5px solid red}
-sheets td.showing-delete-column {outline: 5px solid red}
+sheets td.showing-create-row    {z-index: 10; border-bottom: 15px solid var(--theme-color)}
+sheets td.showing-create-column {z-index: 10; border-right:  15px solid var(--theme-color)}
+sheets td.showing-delete-row    {z-index: 10; outline: 5px solid red}
+sheets td.showing-delete-column {z-index: 10; outline: 5px solid red}
 
 /* NEW */
 editor-pad {

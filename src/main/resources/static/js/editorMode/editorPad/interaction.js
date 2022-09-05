@@ -7,22 +7,21 @@ document.addEventListener(workbook.updateEvent.type,
     () => editorPad.setStyle(workbook.activeSheet.matrixSelector.cellA.style))
 
 editorPad.createSheetButton.onclick=() => {
-    const sheetName = prompt("Создать новый лист:", generateUniqueSheetName("Лист "))
-    if (sheetName !== null && sheetName !== ""){
+    const sheetName = prompt("Создать новый лист:", generateUniqueSheetName("Лист"))
+    if (sheetName && sheetName !== ""){
         if (workbook.getSheetByName(sheetName))
             alert("Лист с таким именем уже существует!")
         else
             httpClient.createSheet(sheetName).catch(e => alert(e))
     }
     function generateUniqueSheetName(word, iteration) {
-        let sheetName = word + (iteration ? iteration : "")
+        let sheetName = word + (iteration ? " " + iteration : "")
         if (workbook.getSheetByName(sheetName)){
-            return generateUniqueSheetName(word, iteration + 1)
+            return generateUniqueSheetName(word, iteration ? iteration + 1 : 1)
         }
         return sheetName
     }
 }
-
 editorPad.deleteSheetButton.onclick=() => {
     const sheetName = workbook.activeSheet.name
     if (confirm("Вы действительно хотите удалить лист " + sheetName + "?"))
@@ -30,83 +29,71 @@ editorPad.deleteSheetButton.onclick=() => {
 }
 
 editorPad.createRowButton.onmouseenter=() => {
-    const sheet = workbook.activeSheet,
-          rowIndex = sheet.matrixSelector.cellB.rowIndex,
-          row = sheet.rows[rowIndex]
+    const sheet = workbook.activeSheet, topRow = sheet.rows[sheet.matrixSelector.cellB.rowIndex]
 
-    // Showing where a new row will be created
-    toggleElements("showing-create-row", row.cells)
-
-    const createRow=() => httpClient.createRow(sheet.name, rowIndex).catch(e => alert(e))
-    editorPad.createRowButton.addEventListener("click", createRow)
-    editorPad.createRowButton.addEventListener(
-        "mouseleave", () => {
-            editorPad.createRowButton.removeEventListener("click", createRow)
-            toggleElements("showing-create-row", row.cells)
-        },
-        {once: true})
+    handleCellsCreatorButton(editorPad.createRowButton, false,
+        () => toggleElements(topRow.cells, "showing-create-row"),
+        () => httpClient.createRow(topRow.location))
 }
 editorPad.deleteRowButton.onmouseenter=() => {
-    const sheet = workbook.activeSheet,
-          rowIndex = sheet.matrixSelector.cellB.rowIndex
+    const sheet = workbook.activeSheet, topRow = sheet.rows[sheet.matrixSelector.cellB.rowIndex]
 
-    // Row to remove is a row after the actual selected cell
-    if (rowIndex === sheet.rows.length-1) return
-    const row = sheet.rows[rowIndex + 1]
+    // Preventing the out of array exception
+    if (topRow.rowIndex === sheet.rows.length - 1) return
+    const rowToRemove = sheet.rows[topRow.rowIndex + 1]
 
-    // Showing where a new row will be deleted
-    toggleElements("showing-delete-row", row.cells)
-
-    const deleteRow=() => httpClient.deleteRow(sheet.name, rowIndex).catch(e => alert(e))
-    editorPad.deleteRowButton.addEventListener("click", deleteRow)
-    editorPad.deleteRowButton.addEventListener(
-        "mouseleave", () => {
-            editorPad.deleteRowButton.removeEventListener("click", deleteRow)
-            toggleElements("showing-delete-row", row.cells)
-        },
-        {once: true})
+    handleCellsCreatorButton(editorPad.deleteRowButton, true,
+        () => toggleElements(rowToRemove.cells, "showing-delete-row"),
+        () => httpClient.deleteRow(rowToRemove.location))
 }
 
 editorPad.createColumnButton.onmouseenter=() => {
-    const sheet = workbook.activeSheet,
-          cellIndex = sheet.matrixSelector.cellB.cellIndex,
-          columnCells = []
-    for (const row of sheet.rows)
-        columnCells.push(row.cells[cellIndex])
+    const sheet = workbook.activeSheet, leftCell = sheet.matrixSelector.cellB
 
-    // Showing where a new column will be created
-    toggleElements("showing-create-column", columnCells)
-
-    const createColumn=() => httpClient.createColumn(sheet.name, cellIndex).catch(e => alert(e))
-    editorPad.createColumnButton.addEventListener("click", createColumn)
-    editorPad.createColumnButton.addEventListener(
-        "mouseleave", () => {
-            editorPad.createColumnButton.removeEventListener("click", createColumn)
-            toggleElements("showing-create-column", columnCells)
-        },
-        {once: true})
+    handleCellsCreatorButton(editorPad.createColumnButton, false,
+        () => toggleElements(getColumnCellsNearCell(leftCell), "showing-create-column"),
+        () => httpClient.createColumn(leftCell.location))
 }
 editorPad.deleteColumnButton.onmouseenter=() => {
-    const sheet = workbook.activeSheet,
-        cellIndex = sheet.matrixSelector.cellB.cellIndex
+    const sheet = workbook.activeSheet, leftCell = sheet.matrixSelector.cellB
 
-    // Column to remove is a column after the actual selected cell
-    if (cellIndex === sheet.rows[0].cells.length - 1) return
+    // Preventing the out of array exception
+    if (leftCell.cellIndex === leftCell.row.cells.length - 1) return
+    const columnCellToRemove = leftCell.row.cells[leftCell.cellIndex + 1]
+
+    handleCellsCreatorButton(editorPad.deleteColumnButton, true,
+        () => toggleElements(getColumnCellsNearCell(columnCellToRemove),"showing-delete-column"),
+        () => httpClient.deleteColumn(columnCellToRemove.location)
+    )
+}
+function getColumnCellsNearCell(cell) {
     const columnCells = []
-    for (const row of sheet.rows)
-        columnCells.push(row.cells[cellIndex + 1])
+    for (const row of cell.row.sheet.rows)
+        columnCells.push(row.cells[cell.cellIndex])
+    return columnCells
+}
 
-    // Showing where a new column will be created
-    toggleElements("showing-delete-column", columnCells)
+// High ordering function which allows creating or deleting cells by corresponding button
+function handleCellsCreatorButton(targetButton, allowShowingUpdate, toggleShowingArgFun, createOrDeleteArgFun){
+    // Showing where cells will be created or deleted
+    toggleShowingArgFun(true)
 
-    const deleteColumn = () => httpClient.deleteColumn(sheet.name, cellIndex).catch(e => alert(e))
-    editorPad.deleteColumnButton.addEventListener("click", deleteColumn)
-    editorPad.deleteColumnButton.addEventListener(
+    targetButton.addEventListener("click", createOrDelete)
+    targetButton.addEventListener(
         "mouseleave", () => {
-            editorPad.deleteColumnButton.removeEventListener("click", deleteColumn)
-            toggleElements("showing-delete-column", columnCells)
+            targetButton.removeEventListener("click", createOrDelete)
+            toggleShowingArgFun(true)
         },
-        {once: true})
+        {once: true}
+    )
+    function createOrDelete() {
+        createOrDeleteArgFun()
+            .then(() => { if(allowShowingUpdate) toggleShowingArgFun(false)})
+            .catch(e => alert(e))
+    }
+}
+function toggleElements(elements, className){
+    for (const element of elements) element.classList.toggle(className)
 }
 
 editorPad.alignTextLeftButton.onclick=()   => setAlign("left")
@@ -125,15 +112,10 @@ editorPad.fontSizePalette.querySelectorAll("value").forEach(paletteValue =>
 editorPad.backgroundColorPalette.querySelectorAll("value").forEach(paletteValue =>
     paletteValue.onclick=() => setStyle("backgroundColor", paletteValue.style.backgroundColor))
 
-function toggleElements(className, elements) {
-    for (const element of elements)
-        element.classList.toggle(className)
-}
-
 function setStyle(styleName, value) {
-    const locations = []
-    workbook.activeSheet.matrixSelector.cells.forEach(cell => locations.push(cell.location))
+    const cellLocations = []
+    workbook.activeSheet.matrixSelector.cells.forEach(cell => cellLocations.push(cell.location))
 
-    httpClient.patchStyle(styleName, value, locations)
+    httpClient.patchStyle(styleName, value, cellLocations)
         .catch(e => alert(e))
 }

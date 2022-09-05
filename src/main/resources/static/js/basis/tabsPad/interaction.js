@@ -5,7 +5,7 @@ import {tabsPad} from "./tabsPad.js"
 
 tabsPad.tadsSection.onclick=(event) => {
     const tab = event.target.closest(".tab")
-    if (tab === null) return
+    if (tab === null || tab.classList.contains("active")) return
     workbook.activeSheet = workbook.getSheetByName(tab.textContent)
 }
 

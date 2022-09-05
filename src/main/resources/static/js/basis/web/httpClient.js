@@ -1,7 +1,7 @@
 export const httpClient = {}
 
 httpClient.requestPermissionToEdit=() =>
-    fetch("editor")
+    fetch("workbook")
         .then( response  => {
             // Authentication
             if (response.status === 401) return false

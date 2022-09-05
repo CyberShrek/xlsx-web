@@ -1,5 +1,5 @@
 document.head.insertAdjacentHTML("beforeend",
-    `<link rel="stylesheet" href="css/worksheets-editor.css"/>`)
+    `<link rel="stylesheet" href="css/sheets-editor.css"/>`)
 
 // Editor pad
 document.body.insertAdjacentHTML("afterbegin", `<editor-pad>
