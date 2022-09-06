@@ -1,15 +1,34 @@
 package me.illyc.xlsx_web.entities
 
+import org.hibernate.validator.constraints.Length
+import org.hibernate.validator.constraints.Range
+
 abstract class Location
 
-data class SheetLocation(val sheetName: String) : Location()
+private const val maxSheetNameLength = 31
+private const val maxRowsAmount = 1048576
+private const val maxColumnsAmount = 16384
 
-data class RowLocation(val sheetName: String,
-                       val rowIndex: Int): Location()
+data class SheetLocation(@field:Length(max = maxSheetNameLength)
+                         val sheetName: String
+                         ): Location()
 
-data class ColumnLocation(val sheetName: String,
-                          val cellIndex: Int): Location()
+data class RowLocation(@field:Length(max = maxSheetNameLength)
+                       val sheetName: String,
+                       @field:Range(min = 0, max = maxRowsAmount.toLong())
+                       val rowIndex: Int
+                       ): Location()
 
-data class CellLocation(val sheetName: String,
+data class ColumnLocation(@field:Length(max = maxSheetNameLength)
+                          val sheetName: String,
+                          @field:Range(min = 0, max = maxColumnsAmount.toLong())
+                          val cellIndex: Int
+                          ): Location()
+
+data class CellLocation(@field:Length(max = maxSheetNameLength)
+                        val sheetName: String,
+                        @field:Range(min = 0, max = maxRowsAmount.toLong())
                         val rowIndex: Int,
-                        val cellIndex: Int): Location()
+                        @field:Range(min = 0, max = maxColumnsAmount.toLong())
+                        val cellIndex: Int
+                        ): Location()

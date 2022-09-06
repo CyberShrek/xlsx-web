@@ -65,7 +65,7 @@ export const workbook = {
 
         sheet.createRow=(rowIndex) => {
             const row = document.createElement("tr")
-            for (let i = 0; i < sheet.rows[0].cells.length-1; i++) {
+            for (let i = 0; i < sheet.rows[0].cells.length; i++) {
                 row.append(createEmptyCell())
             }
             sheet.rows[0].parentNode.insertBefore(row, sheet.rows[rowIndex + 1])

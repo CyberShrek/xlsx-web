@@ -57,5 +57,8 @@ httpClient.patchStyle=(style, value, locations) => {
 }
 
 function handleResponse(response) {
-    if (!response.ok) throw new Error(response.status)
+    if (!response.ok) {
+        response.text().then(text => alert(new Error(text)))
+        throw new Error()
+    }
 }

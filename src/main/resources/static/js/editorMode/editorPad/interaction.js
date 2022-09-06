@@ -13,7 +13,7 @@ editorPad.createSheetButton.onclick=() => {
         if (workbook.getSheetByName(sheetName))
             alert("Лист с таким именем уже существует!")
         else
-            httpClient.createSheet(sheetName).catch(e => alert(e))
+            httpClient.createSheet(sheetName)
     }
     function generateUniqueSheetName(word, iteration) {
         let sheetName = word + (iteration ? " " + iteration : "")
@@ -26,75 +26,83 @@ editorPad.createSheetButton.onclick=() => {
 editorPad.deleteSheetButton.onclick=() => {
     const sheetName = workbook.activeSheet.name
     if (confirm("Вы действительно хотите удалить лист " + sheetName + "?"))
-        httpClient.deleteSheet(sheetName).catch(e => alert(e))
+        httpClient.deleteSheet(sheetName)
 }
 
 editorPad.createRowButton.onmouseenter=() => {
     const sheet = workbook.activeSheet, topRow = sheet.rows[sheet.matrixSelector.cellB.rowIndex]
 
-    handleCellsCreatorButton(editorPad.createRowButton, false,
-        () => toggleElements(topRow.cells, "showing-create-row"),
+    handleMouseEnterOfCellsCreatorButton(editorPad.createRowButton,
+        () => true,
+        (add) => toggleElements(topRow.cells, "showing-create-row", add),
         () => httpClient.createRow(topRow.location))
 }
 editorPad.deleteRowButton.onmouseenter=() => {
-    const sheet = workbook.activeSheet, topRow = sheet.rows[sheet.matrixSelector.cellB.rowIndex]
+    const sheet = workbook.activeSheet, topRow = sheet.rows[sheet.matrixSelector.cellB.rowIndex],
+        getTargetRow=() => sheet.rows[topRow.rowIndex + 1]
 
-    // Preventing the out of array exception
-    if (topRow.rowIndex === sheet.rows.length - 1) return
-
-    const getRowToRemove=() => sheet.rows[topRow.rowIndex + 1]
-    handleCellsCreatorButton(editorPad.deleteRowButton, true,
-        () => toggleElements(getRowToRemove().cells, "showing-delete-row"),
-        () => httpClient.deleteRow(getRowToRemove().location))
+    handleMouseEnterOfCellsCreatorButton(editorPad.deleteRowButton,
+        () => topRow.rowIndex < sheet.rows.length - 1,
+        (add) => toggleElements(getTargetRow().cells, "showing-delete-row", add),
+        () => httpClient.deleteRow(getTargetRow().location))
 }
 
 editorPad.createColumnButton.onmouseenter=() => {
     const sheet = workbook.activeSheet, leftCell = sheet.matrixSelector.cellB
 
-    handleCellsCreatorButton(editorPad.createColumnButton, false,
-        () => toggleElements(getColumnCellsNearCell(leftCell), "showing-create-column"),
+    handleMouseEnterOfCellsCreatorButton(editorPad.createColumnButton,
+        () => true,
+        (add) => toggleElements(getColumnByCell(leftCell), "showing-create-column", add),
         () => httpClient.createColumn(leftCell.location))
 }
 editorPad.deleteColumnButton.onmouseenter=() => {
-    const sheet = workbook.activeSheet, leftCell = sheet.matrixSelector.cellB
+    const sheet = workbook.activeSheet, leftCell = sheet.matrixSelector.cellB,
+        getTargetCell=() => leftCell.row.cells[leftCell.cellIndex + 1]
 
-    // Preventing the out of array exception
-    if (leftCell.cellIndex === leftCell.row.cells.length - 1) return
-    const columnCellToRemove = leftCell.row.cells[leftCell.cellIndex + 1]
-
-    handleCellsCreatorButton(editorPad.deleteColumnButton, true,
-        () => toggleElements(getColumnCellsNearCell(columnCellToRemove),"showing-delete-column"),
-        () => httpClient.deleteColumn(columnCellToRemove.location)
+    handleMouseEnterOfCellsCreatorButton(editorPad.deleteColumnButton,
+        () => leftCell.cellIndex < leftCell.row.cells.length - 1,
+        (add) => toggleElements(getColumnByCell(getTargetCell()),"showing-delete-column", add),
+        () => httpClient.deleteColumn(getTargetCell().location)
     )
 }
-function getColumnCellsNearCell(cell) {
+function getColumnByCell(cell) {
     const columnCells = []
     for (const row of cell.row.sheet.rows)
         columnCells.push(row.cells[cell.cellIndex])
     return columnCells
 }
 
-// High ordering function which allows creating or deleting cells by corresponding button
-function handleCellsCreatorButton(targetButton, allowShowingUpdate, toggleShowingArgFun, createOrDeleteArgFun){
-    // Showing where cells will be created or deleted
-    toggleShowingArgFun(true)
+function toggleElements(elements, className, add){
+    for(const element of elements) {
+        if(add) element.classList.add(className)
+        else element.classList.remove(className)
+    }
+}
 
-    targetButton.addEventListener("click", createOrDelete)
+// High ordering function which allows creating or deleting cells by corresponding button
+function handleMouseEnterOfCellsCreatorButton(targetButton, checkCellsExisting, toggleShowing, createOrDelete){
+    if(!checkCellsExisting()) return
+
+    let mouseEntered = true
+
+    toggleShowing(true) // Showing where cells will be created or deleted
+    targetButton.addEventListener("click", execute)
     targetButton.addEventListener(
         "mouseleave", () => {
-            targetButton.removeEventListener("click", createOrDelete)
-            toggleShowingArgFun(true)
+            mouseEntered = false
+            targetButton.removeEventListener("click", execute)
+            if (checkCellsExisting()) toggleShowing(false)
         },
         {once: true}
     )
-    function createOrDelete() {
-        createOrDeleteArgFun()
-            .then(() => { if(allowShowingUpdate) toggleShowingArgFun(false)})
+    // Executes operation which the target button is representing
+    function execute() {
+        if(checkCellsExisting()) createOrDelete()
+            .then(() => {
+                if (mouseEntered && checkCellsExisting())
+                    toggleShowing(true) })
             .catch(e => alert(e))
     }
-}
-function toggleElements(elements, className){
-    for (const element of elements) element.classList.toggle(className)
 }
 
 editorPad.alignTextLeftButton.onclick=()   => setAlign("left")
@@ -118,5 +126,4 @@ function setStyle(styleName, value) {
     workbook.activeSheet.matrixSelector.cells.forEach(cell => cellLocations.push(cell.location))
 
     httpClient.patchStyle(styleName, value, cellLocations)
-        .catch(e => alert(e))
 }
