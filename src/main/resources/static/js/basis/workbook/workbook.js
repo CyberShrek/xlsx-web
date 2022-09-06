@@ -27,24 +27,20 @@ export const workbook = {
     },
 
     createSheet(sheetName){
-        const sheet = document.createElement("div")
-        sheet.classList.add("sheet")
-        sheet.setAttribute("name", sheetName)
-        sheet.insertAdjacentHTML(
-            "afterbegin", `
-            <table>
-                <tr class="header">
-                    <td> <div class="content"></div></td>
-                </tr>
-            </table>`
-        )
-        sheetsEl.append(sheet)
-        // Corresponding tab creation
-        const tab = document.createElement("div")
-        tab.classList.add("tab")
-        tab.setAttribute("name", sheetName)
-        tab.textContent = sheetName
-        tabsPad.tadsSection.append(tab)
+        sheetsEl.insertAdjacentHTML(
+            "beforeend",`
+            <div class="sheet" name="${sheetName}">
+                <table><tr class="header"></tr></table>
+            </div>`)
+
+        const sheet = workbook.getSheetByName(sheetName)
+        sheet.querySelector("tr").append(createEmptyCell())
+
+        // Corresponding tab
+        tabsPad.tadsSection.insertAdjacentHTML(
+            "beforeend",
+            `<div class="tab" name="${sheetName}">${sheetName}</div>`)
+
         this.defineSheet(sheet)
         workbook.activeSheet = sheet
     },
@@ -70,20 +66,19 @@ export const workbook = {
         sheet.createRow=(rowIndex) => {
             const row = document.createElement("tr")
             for (let i = 0; i < sheet.rows[0].cells.length-1; i++) {
-                row.insertAdjacentHTML("afterbegin", `<td> <div class="content"></div> </td>`)
+                row.append(createEmptyCell())
             }
             sheet.rows[0].parentNode.insertBefore(row, sheet.rows[rowIndex + 1])
             sheet.defineRow(row)
         }
+        sheet.deleteRow=(rowIndex) => sheet.rows[rowIndex].remove()
         sheet.createColumn=(columnIndex) => {
             for (const row of sheet.rows) {
-                const cell = document.createElement("td")
-                cell.insertAdjacentHTML("afterbegin", `<div class="content"></div>`)
+                const cell = createEmptyCell()
                 row.insertBefore(cell, row.cells[columnIndex + 1])
                 row.defineCell(cell)
             }
         }
-        sheet.deleteRow=(rowIndex) => sheet.rows[rowIndex].remove()
         sheet.deleteColumn=(columnIndex) => {
             for (const row of sheet.rows) {
                 row.cells[columnIndex].remove()
@@ -128,4 +123,15 @@ export const workbook = {
         addSortersToSheet(sheet)
         addMatrixSelectorToSheet(sheet)
     }
+}
+
+function createEmptyCell(){
+    const cell = document.createElement("td")
+    cell.insertAdjacentHTML("afterbegin", `<div class="content"></div>`)
+
+    // Applying the default styles
+    cell.style.fontSize = "11pt"
+    cell.style.background = "#FFFFFF"
+
+    return cell
 }

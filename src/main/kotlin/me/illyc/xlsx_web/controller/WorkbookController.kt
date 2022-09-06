@@ -1,6 +1,6 @@
 package me.illyc.xlsx_web.controller
 
-import me.illyc.xlsx_web.entity.*
+import me.illyc.xlsx_web.entities.*
 import me.illyc.xlsx_web.service.WorkbookService
 import me.illyc.xlsx_web.service.converter
 import org.springframework.http.HttpStatus

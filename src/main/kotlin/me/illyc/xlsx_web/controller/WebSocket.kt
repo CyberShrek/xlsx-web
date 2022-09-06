@@ -1,7 +1,7 @@
 package me.illyc.xlsx_web.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import me.illyc.xlsx_web.entity.Order
+import me.illyc.xlsx_web.entities.Order
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.server.standard.ServerEndpointExporter

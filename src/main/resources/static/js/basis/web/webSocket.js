@@ -10,10 +10,10 @@ webSocket.onmessage=(event) => {
         case "deleteSheet": workbook.deleteSheet(jsonMessage.location.sheetName); break
         case "renameSheet": workbook.getSheetByName(jsonMessage.location.sheetName).name = jsonMessage.newName; break
 
-        case "createRow": workbook.activeSheet.createRow(jsonMessage.location.rowIndex); break
-        case "deleteRow": workbook.activeSheet.deleteRow(jsonMessage.location.rowIndex); break
-        case "createColumn": workbook.activeSheet.createColumn(jsonMessage.location.cellIndex); break
-        case "deleteColumn": workbook.activeSheet.deleteColumn(jsonMessage.location.cellIndex); break
+        case "createRow": createOrDelete((sheet, index) => sheet.createRow(index)); break
+        case "deleteRow": createOrDelete((sheet, index) => sheet.deleteRow(index)); break
+        case "createColumn": createOrDelete((sheet, index) => sheet.createColumn(index)); break
+        case "deleteColumn": createOrDelete((sheet, index) => sheet.deleteColumn(index)); break
 
         case "patchStyle": switch (jsonMessage.style){
             case "textAlign": switch (jsonMessage.value){
@@ -39,7 +39,11 @@ webSocket.onmessage=(event) => {
 
         default: alert("Unknown data: "+ event.data)
     }
-    // High-ordering fun
+    // High-ordering
+    function createOrDelete(bySheetAndIndex){
+        bySheetAndIndex(workbook.getSheetByName(jsonMessage.location.sheetName), jsonMessage.location.rowIndex)
+    }
+    // High-ordering
     function setStyle(setStyleToCell) {
         for (const location of jsonMessage.locations) {
             setStyleToCell(workbook
@@ -47,5 +51,6 @@ webSocket.onmessage=(event) => {
                 .rows[location.rowIndex]
                 .cells[location.cellIndex])
         }
+        document.dispatchEvent(workbook.updateEvent)
     }
 }

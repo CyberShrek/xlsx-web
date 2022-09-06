@@ -1,4 +1,4 @@
-package me.illyc.xlsx_web.entity
+package me.illyc.xlsx_web.entities
 
 abstract class Location
 

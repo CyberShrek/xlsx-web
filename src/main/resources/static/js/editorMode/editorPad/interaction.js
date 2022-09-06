@@ -7,8 +7,9 @@ document.addEventListener(workbook.updateEvent.type,
     () => editorPad.setStyle(workbook.activeSheet.matrixSelector.cellA.style))
 
 editorPad.createSheetButton.onclick=() => {
-    const sheetName = prompt("Создать новый лист:", generateUniqueSheetName("Лист"))
+    let sheetName = prompt("Создать новый лист:", generateUniqueSheetName("Лист"))
     if (sheetName && sheetName !== ""){
+        sheetName = sheetName.slice(0, 31) // 31 is the maximum length of a sheet name according to Excel specs
         if (workbook.getSheetByName(sheetName))
             alert("Лист с таким именем уже существует!")
         else
@@ -40,11 +41,11 @@ editorPad.deleteRowButton.onmouseenter=() => {
 
     // Preventing the out of array exception
     if (topRow.rowIndex === sheet.rows.length - 1) return
-    const rowToRemove = sheet.rows[topRow.rowIndex + 1]
 
+    const getRowToRemove=() => sheet.rows[topRow.rowIndex + 1]
     handleCellsCreatorButton(editorPad.deleteRowButton, true,
-        () => toggleElements(rowToRemove.cells, "showing-delete-row"),
-        () => httpClient.deleteRow(rowToRemove.location))
+        () => toggleElements(getRowToRemove().cells, "showing-delete-row"),
+        () => httpClient.deleteRow(getRowToRemove().location))
 }
 
 editorPad.createColumnButton.onmouseenter=() => {
