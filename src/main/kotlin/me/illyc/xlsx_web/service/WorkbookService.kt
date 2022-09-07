@@ -47,15 +47,19 @@ class WorkbookService(private val spreader: WebSocket)
     }
 
     private fun createSheet(loc: SheetLocation){
-        if (loc.sheetName.length > 0)
-            throw WorkbookException("Пошёл нахуй")
-        val sheet = workbook.createSheet(loc.sheetName)
+        assertSheetDoesNotExist(loc.sheetName)
         converter.patchStyleToXSSFCell("textAlign", "center",
-            sheet.createRow(0).createCell(0))
+            workbook.createSheet(loc.sheetName).createRow(0).createCell(0))
     }
-    private fun deleteSheet(loc: SheetLocation) = workbook.removeSheetAt(workbook.getSheetIndex(loc.sheetName))
-    private fun renameSheet(loc: SheetLocation, newName: String) = workbook
-        .setSheetName(workbook.getSheetIndex(loc.sheetName), newName)
+    private fun deleteSheet(loc: SheetLocation) {
+        assertSheetExists(loc.sheetName)
+        workbook.removeSheetAt(workbook.getSheetIndex(loc.sheetName))
+    }
+    private fun renameSheet(loc: SheetLocation, newName: String) {
+        assertSheetExists(loc.sheetName)
+        assertSheetDoesNotExist(newName)
+        workbook.setSheetName(workbook.getSheetIndex(loc.sheetName), newName)
+    }
 
     private fun createRow(loc: RowLocation) {
         val sheet = workbook.getSheet(loc.sheetName)
@@ -125,6 +129,15 @@ class WorkbookService(private val spreader: WebSocket)
         else for (i in from until row.lastCellNum)
             plow(i)
     }
+
+    private fun assertSheetExists(sheetName: String) {
+        if (workbook.getSheet(sheetName) != null) error("Sheet \"${sheetName}\" does not exist!")
+    }
+    private fun assertSheetDoesNotExist(sheetName: String) {
+        if (workbook.getSheet(sheetName) == null) error("Sheet \"${sheetName}\" already exists!")
+    }
+
+    private fun error(text: String): Nothing = throw WorkbookException(text)
 }
 
 class WorkbookException(override val message: String?) : Exception()
