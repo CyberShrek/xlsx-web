@@ -1,5 +1,6 @@
 package me.illyc.xlsx_web.controller
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import me.illyc.xlsx_web.entities.Order
 import org.springframework.context.annotation.Bean
@@ -19,13 +20,20 @@ open class WebSocket {
 
     companion object {
         private val sessions = HashSet<Session>()
+        private val mapper = ObjectMapper()
     }
 
-    @OnOpen  fun addSession(ses: Session)    = sessions.add(ses)
-    @OnClose fun removeSession(ses: Session) = sessions.remove(ses)
+    init {
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    }
+
+    @OnOpen
+    fun addSession(ses: Session) = sessions.add(ses)
+    @OnClose
+    fun removeSession(ses: Session) = sessions.remove(ses)
 
     fun spreadOrder(order: Order) {
-        val json = ObjectMapper().writeValueAsString(order)
+        val json = mapper.writeValueAsString(order)
         sessions.forEach { it.basicRemote.sendText(json) }
     }
 }

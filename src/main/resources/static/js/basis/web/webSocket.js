@@ -1,56 +1,46 @@
 import {workbook} from "../workbook/workbook.js"
 
-const webSocket = new WebSocket(`ws://${document.location.host+document.location.pathname}spreader`)
+const webSocket = new WebSocket(`ws://${document.location.host + document.location.pathname}spreader`)
 
-webSocket.onmessage=(event) => {
-    const jsonOrder = JSON.parse(event.data)
+webSocket.onmessage = (event) => {
+    const order = JSON.parse(event.data)
 
-    switch (jsonOrder.order){
-        case "createSheet": workbook.createSheet(jsonOrder.location.sheetName); break
-        case "deleteSheet": workbook.deleteSheet(jsonOrder.location.sheetName); break
-        case "renameSheet": getTargetSheet().name = jsonOrder.newName; break
+    switch (order.order) {
+        case "create sheet": workbook.createSheet(order.location.sheetName); break
+        case "delete sheet": workbook.deleteSheet(order.location.sheetName); break
+        case "rename sheet": getTargetSheet().name = order.newName; break
 
-        case "createRow"   : getTargetSheet().createRow(jsonOrder.location.rowIndex); break
-        case "deleteRow"   : getTargetSheet().deleteRow(jsonOrder.location.rowIndex); break
-        case "createColumn": getTargetSheet().createColumn(jsonOrder.location.cellIndex); break
-        case "deleteColumn": getTargetSheet().deleteColumn(jsonOrder.location.cellIndex); break
+        case "create row"   : getTargetSheet().createRow(order.location.rowIndex); break
+        case "delete row"   : getTargetSheet().deleteRow(order.location.rowIndex); break
+        case "create column": getTargetSheet().createColumn(order.location.cellIndex); break
+        case "delete column": getTargetSheet().deleteColumn(order.location.cellIndex); break
 
-        case "patchStyle": switch (jsonOrder.style){
-            case "textAlign": switch (jsonOrder.value){
-                case "left"  : setStyle((cell) => cell.style.textAlign = "start"); break
-                case "right" : setStyle((cell) => cell.style.textAlign = "end"); break
-                case "center": setStyle((cell) => cell.style.textAlign = "center"); break
-            } break
-            case "fontBold": {
-                const fontWeight = jsonOrder.value ? "bold" : "normal"
-                setStyle((cell) => cell.style.fontWeight = fontWeight)
-            } break
-            case "fontItalic": {
-                const fontStyle = jsonOrder.value ? "italic" : "normal"
-                setStyle((cell) => cell.style.fontStyle = fontStyle)
-            } break
-            case "fontUnderline": {
-                const textDecoration = jsonOrder.value ? "underline" : "none"
-                setStyle((cell) => cell.style.textDecoration = textDecoration)
-            } break
-            case "fontSize": setStyle((cell) => cell.style.fontSize = jsonOrder.value); break
-            case "backgroundColor": setStyle((cell) => cell.style.backgroundColor = jsonOrder.value)
+        case "patch cell": {
+            if(order.patch.text)  getTargetCell().text = order.patch.text
+            if(order.patch.style) patchCellStyle(getTargetCell(), order.patch.style)
         } break
 
-        default: alert("Unknown data: "+ event.data)
+        default: alert("Unknown order: " + event.data)
     }
 
-    // High-ordering
-    function setStyle(setStyleToCell) {
-        for (const location of jsonOrder.locations) {
-            setStyleToCell(getTargetSheet()
-                .rows[location.rowIndex]
-                .cells[location.cellIndex])
-        }
+    function patchCellStyle(cell, patch){
+        if(patch.align)                    cell.style.textAlign      = patch.align
+        if(patch.fontSize)                 cell.style.fontSize       = patch.fontSize + "pt"
+        if(patch.background)               cell.style.background     = patch.background
+        if(patch.bold !== undefined)       cell.style.fontWeight     = patch.bold ? "bold" : "normal"
+        if(patch.italic !== undefined)     cell.style.fontStyle      = patch.italic ? "italic" : "normal"
+        if(patch.underlined !== undefined) cell.style.textDecoration = patch.underlined ? "underline" : "none"
+
         document.dispatchEvent(workbook.updateEvent)
     }
 
-    function getTargetSheet(){
-        return workbook.getSheetByName(jsonOrder.location.sheetName)
+    function getTargetSheet() {
+        return workbook
+            .getSheetByName(order.location.sheetName)
+    }
+    function getTargetCell() {
+        return getTargetSheet()
+            .rows[order.location.rowIndex]
+            .cells[order.location.cellIndex]
     }
 }

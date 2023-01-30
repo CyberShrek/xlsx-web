@@ -7,13 +7,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import java.net.URLEncoder
 import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
 
 @Controller
 @ResponseStatus(value = HttpStatus.OK)
-class WorkbookController(private val service: WorkbookService)
-{
+class WorkbookController(private val service: WorkbookService) {
     // Returns the actual xlxs-catalog template
     @GetMapping
     fun getCatalog(model: Model): String {
@@ -25,49 +25,51 @@ class WorkbookController(private val service: WorkbookService)
     // Allows to download the xlxs-catalog file
     @GetMapping("/file")
     fun downloadCatalog(response: HttpServletResponse) {
-        response.setHeader("Content-disposition", "attachment; filename=Catalog.xlsx")
+        val fileName = URLEncoder.encode("Реестр ПО", "UTF-8").replace('+', ' ') + ".xlsx"
+        response.setHeader("Content-disposition", "attachment; filename=$fileName")
         response.outputStream.use { stream -> service.workbook.write(stream) }
     }
 
     // Returns 401 if the client is not allowed to edit the document
     @GetMapping("/workbook")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    fun requestPermission() {}
+    fun requestPermission() {
+    }
 
     // SHEETS
-
     @PostMapping("/workbook/sheets/{sheetName}")
-    fun createSheet(@Valid loc: SheetLocation) = service.executeOrder(CreateSheetOrder(loc))
+    fun createSheet(
+        @Valid loc: SheetLocation) = service.bearOrder(CreateSheetOrder(loc))
 
     @DeleteMapping("/workbook/sheets/{sheetName}")
-    fun deleteSheet(@Valid loc: SheetLocation) = service.executeOrder(DeleteSheetOrder(loc))
+    fun deleteSheet(
+        @Valid loc: SheetLocation) = service.bearOrder(DeleteSheetOrder(loc))
 
     @PatchMapping("/workbook/sheets/{sheetName}")
-    fun renameSheet(@RequestBody newName: String,
-                    @Valid loc: SheetLocation) = service.executeOrder(RenameSheetOrder(loc, newName))
+    fun renameSheet(
+        @RequestBody newName: String,
+        @Valid loc: SheetLocation) = service.bearOrder(RenameSheetOrder(loc, newName))
 
     // ROWS & COLUMNS
-
     @PostMapping("/workbook/sheets/{sheetName}/rows/{rowIndex}")
-    fun createRow(@Valid loc: RowLocation) = service.executeOrder(CreateRowOrder(loc))
+    fun createRow(
+        @Valid loc: RowLocation) = service.bearOrder(CreateRowOrder(loc))
 
     @DeleteMapping("/workbook/sheets/{sheetName}/rows/{rowIndex}")
-    fun deleteRow(@Valid loc: RowLocation) = service.executeOrder(DeleteRowOrder(loc))
+    fun deleteRow(
+        @Valid loc: RowLocation) = service.bearOrder(DeleteRowOrder(loc))
 
     @PostMapping("/workbook/sheets/{sheetName}/columns/{cellIndex}")
-    fun createColumn(@Valid loc: ColumnLocation) = service.executeOrder(CreateColumnOrder(loc))
+    fun createColumn(
+        @Valid loc: ColumnLocation) = service.bearOrder(CreateColumnOrder(loc))
 
     @DeleteMapping("/workbook/sheets/{sheetName}/columns/{cellIndex}")
-    fun deleteColumn(@Valid loc: ColumnLocation) = service.executeOrder(DeleteColumnOrder(loc))
+    fun deleteColumn(
+        @Valid loc: ColumnLocation) = service.bearOrder(DeleteColumnOrder(loc))
 
     // CELLS
-
     @PatchMapping("/workbook/sheets/{sheetName}/rows/{rowIndex}/cells/{cellIndex}")
-    fun patchText(@RequestBody text: String,
-                  @Valid loc: CellLocation) = service.executeOrder(PatchTextOrder(loc, text.removeSurrounding("\"")))
-
-    @PatchMapping("/workbook/styles/{styleName}")
-    fun patchStyle(@PathVariable styleName: String,
-                   @RequestParam value: String,
-                   @RequestBody @Valid locs: Set<CellLocation>) = service.executeOrder(PatchStyleOrder(locs, styleName, value))
+    fun patchCell(
+        @Valid loc: CellLocation,
+        @RequestBody patch: CellPatch) = service.bearOrder(PatchCellOrder(loc, patch))
 }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/sheets.css}"/>
     <script type="module" th:src="@{/js/basis/basis.js}"></script>
-    <title>XLSX-web</title>
+    <title>Реестр ПО КОДУПП</title>
 </head>
 <body>
 <sheets>
@@ -41,12 +41,10 @@
         </th:block>
     </div>
     <div class="buttons">
-        <form class="button download"
-              method="get"
-              action="#" th:action="@{/file}">
+        <a class="button download" href="http://localhost:8080/xlsx-catalog/file" download>
             <img th:src="@{img/excel.png}">
             Загрузить
-        </form>
+        </a>
         <div class="button edit">
             <img th:src="@{img/edit.png}">
             Редактировать

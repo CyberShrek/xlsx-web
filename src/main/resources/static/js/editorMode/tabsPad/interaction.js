@@ -2,8 +2,8 @@ import {tabsPad} from "../../basis/tabsPad/tabsPad.js"
 import {workbook} from "../../basis/workbook/workbook.js"
 import {httpClient} from "../../basis/web/httpClient.js"
 
-tabsPad.tadsSection.ondblclick=(event) => {
-    if(!document.body.classList.contains("editor-mode")) return
+tabsPad.tadsSection.ondblclick = (event) => {
+    if (!document.body.classList.contains("editor-mode")) return
 
     const oldName = event.target.closest(".tab").textContent
     let newName = prompt("Изменить название листа: ", oldName)

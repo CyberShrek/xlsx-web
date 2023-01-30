@@ -4,9 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>xlsx-web</artifactId>
-    <groupId>me.illyc</groupId>
-    <version>1.0</version>
+    <groupId>org.vniizt</groupId>
+    <artifactId>xlsx</artifactId>
+    <version>catalog</version>
+    <name>xlsx-catalog</name>
     <packaging>war</packaging>
 
     <parent>
@@ -16,7 +17,6 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <name>xlsx-web</name>
     <description>
         A simple web application that allows users to read, edit and export .xlsx files
         (think of this as a primitive implementation of Excel)

@@ -1,7 +1,7 @@
 import {workbook} from "../workbook.js"
 
 // Adds the cell selection mechanism like in Excel to sheet
-export function addMatrixSelectorToSheet(sheet){
+export function addMatrixSelectorToSheet(sheet) {
     // The matrix of selected cells
     sheet.matrixSelector = {
         cells: [],
@@ -11,26 +11,30 @@ export function addMatrixSelectorToSheet(sheet){
         // Gives access to the matrix selection control
         enabled: false,
 
-        addCell(cell){
+        addCell(cell) {
             cell.classList.add("selected")
             this.cells.push(cell)
         },
-        removeCell(cell){
+        removeCell(cell) {
             cell.classList.remove("selected")
         },
-        clear(){
+        clear() {
             this.cells.forEach(cell => this.removeCell(cell))
             this.cells = []
         },
         // Matrix coordinates
-        get topId(){
-            return (this.cellA.rowIndex <= this.cellB.rowIndex) ? this.cellA.rowIndex : this.cellB.rowIndex },
-        get bottomId(){
-            return (this.cellA.rowIndex <= this.cellB.rowIndex) ? this.cellB.rowIndex : this.cellA.rowIndex },
-        get leftId(){
-            return (this.cellA.cellIndex <= this.cellB.cellIndex) ? this.cellA.cellIndex : this.cellB.cellIndex },
-        get rightId(){
-            return (this.cellA.cellIndex <= this.cellB.cellIndex) ? this.cellB.cellIndex : this.cellA.cellIndex },
+        get topId() {
+            return (this.cellA.rowIndex <= this.cellB.rowIndex) ? this.cellA.rowIndex : this.cellB.rowIndex
+        },
+        get bottomId() {
+            return (this.cellA.rowIndex <= this.cellB.rowIndex) ? this.cellB.rowIndex : this.cellA.rowIndex
+        },
+        get leftId() {
+            return (this.cellA.cellIndex <= this.cellB.cellIndex) ? this.cellA.cellIndex : this.cellB.cellIndex
+        },
+        get rightId() {
+            return (this.cellA.cellIndex <= this.cellB.cellIndex) ? this.cellB.cellIndex : this.cellA.cellIndex
+        },
     }
     const matrix = sheet.matrixSelector
 
@@ -45,6 +49,7 @@ export function addMatrixSelectorToSheet(sheet){
         // When the mouse cursor moves over the cells, these cells are included in the matrix
         sheet.addEventListener("mousemove", selectCellsMatrix)
     }
+
     function endSelection() {
         sheet.removeEventListener("mousemove", selectCellsMatrix)
     }
@@ -56,24 +61,32 @@ export function addMatrixSelectorToSheet(sheet){
         event.preventDefault()
 
         let targetCell
-        try { switch (event.keyCode) {
-            case 37: // LEFT
-                targetCell = sheet.rows[matrix.cellB.rowIndex].cells[matrix.cellB.cellIndex-1]
-                if (sheet.scrollLeft > targetCell.offsetLeft)
-                    targetCell.scrollIntoView({block: "nearest", inline: "start", behavior: "smooth"}); break
-            case 38: // TOP
-                targetCell = sheet.rows[matrix.cellB.rowIndex-1].cells[matrix.cellB.cellIndex]
-                if (sheet.scrollTop > targetCell.offsetTop)
-                    targetCell.scrollIntoView({block: "start", inline: "nearest", behavior: "smooth"}); break
-            case 39: // RIGHT
-                targetCell = sheet.rows[matrix.cellB.rowIndex].cells[matrix.cellB.cellIndex+1]
-                if (sheet.scrollLeft + sheet.clientWidth < targetCell.offsetLeft + targetCell.offsetWidth)
-                    targetCell.scrollIntoView({block: "nearest", inline: "end", behavior: "smooth"}); break
-            case 40: // BOTTOM
-                targetCell = sheet.rows[matrix.cellB.rowIndex+1].cells[matrix.cellB.cellIndex]
-                if (sheet.scrollTop + sheet.clientHeight < targetCell.offsetTop + targetCell.offsetHeight)
-                    targetCell.scrollIntoView({block: "end", inline: "nearest", behavior: "smooth"}); break
-        } } catch (exception) { return }
+        try {
+            switch (event.keyCode) {
+                case 37: // LEFT
+                    targetCell = sheet.rows[matrix.cellB.rowIndex].cells[matrix.cellB.cellIndex - 1]
+                    if (sheet.scrollLeft > targetCell.offsetLeft)
+                        targetCell.scrollIntoView({block: "nearest", inline: "start", behavior: "smooth"});
+                    break
+                case 38: // TOP
+                    targetCell = sheet.rows[matrix.cellB.rowIndex - 1].cells[matrix.cellB.cellIndex]
+                    if (sheet.scrollTop > targetCell.offsetTop)
+                        targetCell.scrollIntoView({block: "start", inline: "nearest", behavior: "smooth"});
+                    break
+                case 39: // RIGHT
+                    targetCell = sheet.rows[matrix.cellB.rowIndex].cells[matrix.cellB.cellIndex + 1]
+                    if (sheet.scrollLeft + sheet.clientWidth < targetCell.offsetLeft + targetCell.offsetWidth)
+                        targetCell.scrollIntoView({block: "nearest", inline: "end", behavior: "smooth"});
+                    break
+                case 40: // BOTTOM
+                    targetCell = sheet.rows[matrix.cellB.rowIndex + 1].cells[matrix.cellB.cellIndex]
+                    if (sheet.scrollTop + sheet.clientHeight < targetCell.offsetTop + targetCell.offsetHeight)
+                        targetCell.scrollIntoView({block: "end", inline: "nearest", behavior: "smooth"});
+                    break
+            }
+        } catch (exception) {
+            return
+        }
 
         updateSelection(targetCell, event)
     }
@@ -106,6 +119,7 @@ export function addMatrixSelectorToSheet(sheet){
             }
         }
     }
+
     selectCellsMatrix()
 }
 
@@ -121,7 +135,7 @@ document.addEventListener("copy", () => {
         lastRowIndex = matrix.cells[0].rowIndex
 
     matrix.cells.forEach(cell => {
-        if (lastRowIndex !== cell.rowIndex){
+        if (lastRowIndex !== cell.rowIndex) {
             copyingTable.append(copyingRow)
             copyingRow = document.createElement("tr")
             lastRowIndex = cell.rowIndex

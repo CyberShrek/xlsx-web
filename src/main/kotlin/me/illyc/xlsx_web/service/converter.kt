@@ -1,52 +1,34 @@
 package me.illyc.xlsx_web.service
 
-import org.apache.poi.ss.usermodel.BorderStyle
 import org.apache.poi.ss.usermodel.CellType
-import org.apache.poi.ss.usermodel.HorizontalAlignment
+import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap
 import org.apache.poi.xssf.usermodel.XSSFCell
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
+import org.apache.poi.xssf.usermodel.XSSFColor
 
 // Converts POI entity's values and styles. And backwards
-object converter
-{
+object converter {
     // Takes XSSFCellStyle object and return it as a CSS string
     fun XSSFCellStyleToCSS(style: XSSFCellStyle) = StringBuilder().append(
         "background:" +
                 if (style.fillForegroundColorColor != null)
                     "#" + style.fillForegroundColorColor.argbHex.substring(2)
                 else "#FFFFFF", ";",
-        "text-align:" +
-                when (style.alignment) {
-                    HorizontalAlignment.LEFT -> "start"
-                    HorizontalAlignment.RIGHT -> "end"
-                    else -> "center" }, ";",
+        "text-align:" + style.alignment, ";",
         "font-weight:" + if (style.font.bold) "bold" else "normal", ";",
         "font-style:" + if (style.font.italic) "italic" else "normal", ";",
         "text-decoration:" + if (style.font.underline > 0) "underline" else "none", ";",
-        "font-size:" + style.font.fontHeightInPoints.toString() + "pt")
-        .toString()
+        "font-size:" + style.font.fontHeightInPoints.toString() + "pt"
+    )
+    .toString()
 
-    // Takes simple style value and patch it to the XSSFCellStyle
-    fun patchStyleToXSSFCell(styleName: String, value: String, cell: XSSFCell) {
-        val cellStyle = cell.row.sheet.workbook.createCellStyle()
-        cellStyle.cloneStyleFrom(cell.cellStyle)
+    fun cssColorToXSSFColor(cssColor:String): XSSFColor{
+        val rgb: List<Byte> = cssColor
+            .replace("[^\\d,]".toRegex(), "")
+            .split(",")
+            .map { t -> t.toInt().toByte() }
 
-        when(styleName){
-            "textAlign" -> when(value){
-                "left" -> cellStyle.alignment = HorizontalAlignment.LEFT
-                "right" -> cellStyle.alignment = HorizontalAlignment.RIGHT
-                "center" -> cellStyle.alignment = HorizontalAlignment.CENTER
-            }
-        }
-
-        // Assigning thin borders by default
-        cellStyle.borderTop = BorderStyle.THIN
-        cellStyle.borderBottom = BorderStyle.THIN
-        cellStyle.borderLeft = BorderStyle.THIN
-        cellStyle.borderRight = BorderStyle.THIN
-        //        cellStyle.setFont(font)
-
-        cell.cellStyle = cellStyle
+        return XSSFColor(byteArrayOf(rgb[0], rgb[1], rgb[2]), DefaultIndexedColorMap())
     }
 
     // "Simple value" is the original value devoid of specific rudiments not used in the browser

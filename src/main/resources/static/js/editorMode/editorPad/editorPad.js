@@ -91,72 +91,71 @@ document.body.insertAdjacentHTML("afterbegin", `<editor-pad>
 
 // Defining the just created editor-pad and it's actionable elements
 export const editorPad = document.querySelector("editor-pad")
-editorPad.fontSizePalette        = editorPad.querySelector("font-size")
+editorPad.fontSizePalette = editorPad.querySelector("font-size")
 editorPad.backgroundColorPalette = editorPad.querySelector("background-color")
-editorPad.fontBoldButton         = editorPad.querySelector("font-bold")
-editorPad.fontItalicButton       = editorPad.querySelector("font-italic")
-editorPad.fontUnderlineButton    = editorPad.querySelector("font-underline")
-editorPad.alignTextLeftButton    = editorPad.querySelector("align-text-left")
-editorPad.alignTextCenterButton  = editorPad.querySelector("align-text-center")
-editorPad.alignTextRightButton   = editorPad.querySelector("align-text-right")
-editorPad.createRowButton        = editorPad.querySelector("add-row")
-editorPad.createColumnButton     = editorPad.querySelector("add-column")
-editorPad.deleteRowButton        = editorPad.querySelector("remove-row")
-editorPad.deleteColumnButton     = editorPad.querySelector("remove-column")
-editorPad.createSheetButton      = editorPad.querySelector("add-sheet")
-editorPad.deleteSheetButton      = editorPad.querySelector("remove-sheet")
+editorPad.fontBoldButton = editorPad.querySelector("font-bold")
+editorPad.fontItalicButton = editorPad.querySelector("font-italic")
+editorPad.fontUnderlineButton = editorPad.querySelector("font-underline")
+editorPad.alignTextLeftButton = editorPad.querySelector("align-text-left")
+editorPad.alignTextCenterButton = editorPad.querySelector("align-text-center")
+editorPad.alignTextRightButton = editorPad.querySelector("align-text-right")
+editorPad.createRowButton = editorPad.querySelector("add-row")
+editorPad.createColumnButton = editorPad.querySelector("add-column")
+editorPad.deleteRowButton = editorPad.querySelector("remove-row")
+editorPad.deleteColumnButton = editorPad.querySelector("remove-column")
+editorPad.createSheetButton = editorPad.querySelector("add-sheet")
+editorPad.deleteSheetButton = editorPad.querySelector("remove-sheet")
 
 // EVERYTHING NEXT BELOW IS DEFINING SELECTION FUNCTIONS FOR THESE ELEMENTS
 
-editorPad.selectFontSize=(fontSize) => {
+editorPad.selectFontSize = (fontSize) => {
     for (const paletteCell of editorPad.fontSizePalette.querySelectorAll("value")) {
-        if (paletteCell.textContent === fontSize.replace("pt", "")) paletteCell.classList.add("active")
+        if (paletteCell.textContent.trim() === fontSize.replace("pt", "")) paletteCell.classList.add("active")
         else paletteCell.classList.remove("active")
     }
 }
-editorPad.selectBackground=(background) => {
+editorPad.selectBackground = (background) => {
     for (const paletteCell of editorPad.backgroundColorPalette.querySelectorAll("value")) {
         if (paletteCell.style.background === background) paletteCell.classList.add("active")
         else paletteCell.classList.remove("active")
     }
 }
-editorPad.selectBold=()      => editorPad.fontBoldButton.classList.add("active")
-editorPad.resetBold=()       => editorPad.fontBoldButton.classList.remove("active")
-editorPad.selectItalic=()    => editorPad.fontItalicButton.classList.add("active")
-editorPad.resetItalic=()     => editorPad.fontItalicButton.classList.remove("active")
-editorPad.selectUnderline=() => editorPad.fontUnderlineButton.classList.add("active")
-editorPad.resetUnderline=()  => editorPad.fontUnderlineButton.classList.remove("active")
+editorPad.selectBold = () => editorPad.fontBoldButton.classList.add("active")
+editorPad.resetBold = () => editorPad.fontBoldButton.classList.remove("active")
+editorPad.selectItalic = () => editorPad.fontItalicButton.classList.add("active")
+editorPad.resetItalic = () => editorPad.fontItalicButton.classList.remove("active")
+editorPad.selectUnderline = () => editorPad.fontUnderlineButton.classList.add("active")
+editorPad.resetUnderline = () => editorPad.fontUnderlineButton.classList.remove("active")
 
-editorPad.selectAlignLeft=() => {
+editorPad.selectAlignLeft = () => {
     editorPad.alignTextLeftButton.classList.add("active")
     editorPad.alignTextCenterButton.classList.remove("active")
     editorPad.alignTextRightButton.classList.remove("active")
 }
-editorPad.selectAlignCenter=() => {
+editorPad.selectAlignCenter = () => {
     editorPad.alignTextLeftButton.classList.remove("active")
     editorPad.alignTextCenterButton.classList.add("active")
     editorPad.alignTextRightButton.classList.remove("active")
 }
-editorPad.selectAlignRight=() => {
+editorPad.selectAlignRight = () => {
     editorPad.alignTextLeftButton.classList.remove("active")
     editorPad.alignTextCenterButton.classList.remove("active")
     editorPad.alignTextRightButton.classList.add("active")
 }
 
 // Updates the displayed values in the pad (fonts, styles, align, etc.) according to an argument style
-editorPad.setStyle=(style)=>{
+editorPad.setStyle=(style) => {
     editorPad.selectFontSize(style.fontSize)
     editorPad.selectBackground(style.background)
-    if (style.fontWeight === "bold") editorPad.selectBold()
-    else editorPad.resetBold()
 
-    if (style.fontStyle === "italic") editorPad.selectItalic()
-    else editorPad.resetItalic()
-
+    if (style.fontWeight === "bold")          editorPad.selectBold()
+    else                                      editorPad.resetBold()
+    if (style.fontStyle === "italic")         editorPad.selectItalic()
+    else                                      editorPad.resetItalic()
     if (style.textDecoration === "underline") editorPad.selectUnderline()
-    else editorPad.resetUnderline()
+    else                                      editorPad.resetUnderline()
 
-    if      (style.textAlign === "start")  editorPad.selectAlignLeft()
+    if      (style.textAlign === "left") editorPad.selectAlignLeft()
     else if (style.textAlign === "center") editorPad.selectAlignCenter()
-    else if (style.textAlign === "end")    editorPad.selectAlignRight()
+    else if (style.textAlign === "right") editorPad.selectAlignRight()
 }
